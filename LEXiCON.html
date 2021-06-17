@@ -7,7 +7,7 @@ body {font-family: Arial;}
 /*------ GUI--------*/
 .cursor {
   fill: none;
-  stroke: none; /*brown*/
+  stroke: brown;
   pointer-events: none;
 }
 path {
@@ -1453,7 +1453,7 @@ text {
 {"source": "inputTemplate", "target": "Pr", "value": 2, "type": "seekingRA", "label": ""},
 ]
 };</script>
-<script>
+<script id="d3Graphic">
  var   width = 500;
  var   height = 500;
 
@@ -1467,6 +1467,7 @@ var svg = d3.select("#r2")
         .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
         .on("start", dragstarteddraw));
 
+var svgNav = svg.append("g")
 
 /* joins data example https://observablehq.com/@bmpms/d3-js-join 
 function update_group(data){
@@ -1501,7 +1502,7 @@ var simulation = d3.forceSimulation()
 	//simulation.stop()
 
 //---------- b) define links group and set link properties (position comes later):
-var link = svg.append("g")
+var link = svgNav.append("g")
     .attr("class", "links")
     .selectAll("line")
     .data(graph.links)
@@ -1509,7 +1510,7 @@ var link = svg.append("g")
 	.attr('class', function(d) { return typeLineClass(d); });
 	
 //----------- c) define nodes group and set properties.
-var node = svg.append("g")
+var node = svgNav.append("g")
     .attr("class", "nodes")
 	 
     .selectAll("g")
@@ -1541,7 +1542,9 @@ var labels = node.append("text")
 
 // -------- d) append the data to the simulation
     simulation
-      .nodes(graph.nodes);
+      .nodes(graph.nodes)
+	  
+	  ;
 
 
     simulation.force("link")
@@ -1573,7 +1576,7 @@ var cursor = svg.append("circle")
 
 var inputTemplate = svg.append("g")
     .attr("id", "inputTEMPLATE")
-	.data(graphUserInput.nodes)
+	//.data(graphUserInput.nodes)
 	
 
 	inputTemplate.append("circle")
@@ -1587,6 +1590,7 @@ var inputTemplate = svg.append("g")
 	.attr("class","TemplateText")
 restart();
 
+/* --- Zoom interactions --- https://bl.ocks.org/catherinekerr/b3227f16cebc8dd8beee461a945fb323*/
 
 /* --- https://bl.ocks.org/mbostock/f705fc55e6f26df29354 */
 var line = d3.line()
