@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<style>
+body {font-family: Arial;}
+
+/*------ GUI--------*/
+.cursor {
+  fill: none;
+  stroke: none; /*brown*/
+  pointer-events: none;
+}
+path {
+  fill: none;
+  stroke: #f6a901;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.inputTEMPLATE {
+  fill: none;
+  stroke: brown;
+  pointer-events: none;
+}
+
+.remoteContol  {
+  width: 175px;
+  position: fixed;
+  z-index: 1;
+  height: 250px;
+  top: 10;
+  left: 10;
+  background-color: rgba(0, 0, 0, 0.3);
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 10px;
+}
+
+.remoteContol a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+/* -------------------LINKS------------------------ */
+
+
+.links line {
+
+}
+
+.RAWG {
+  stroke-width: 15px;
+  stroke:#8f753c;
+  stroke-opacity: 0.5;
+}
+.TemplateGovernance {
+  stroke:#0a17a9;
+  stroke-width: 10px;
+  stroke-opacity: 0.1;
+}
+
+.EpicRel {
+  stroke:#9050DF;
+  stroke-width: 10px;
+  stroke-opacity: 0.1;
+}
+.EpicRelDup {
+  stroke:#9050DF;
+  stroke-width: 15px;
+  stroke-opacity: 0.9;
+}
+
+/* -------------------NODES------------------------ */
+.nodes polygon {
+  stroke-width: 2.5px;
+}
+
+text {
+  font-family: sans-serif;
+  font-size: 1px;
+  font-weight: bold;
+}
+
+.BoardText {
+  font-size: 20px;
+  text-anchor:middle;
+  fill: #aaaaaa;
+  r: 60px;
+  z-index: 41
+}
+.Board {
+  fill: #FFF;
+  r: 60px;
+  z-index: 40;
+}
+.EpicText {
+  font-size: 10px;
+  text-anchor:middle;
+  fill: #5312A8;
+  r: 20px;
+  z-index: 41
+}
+.Epic {
+  fill: #9050DF;
+  r: 20px;
+  z-index: 40;
+}
+.StoryText {
+  font-size: 8px;
+  text-anchor:middle;
+  fill: #3E722A;
+  r: 20px;
+  z-index: 41
+}
+.Story {
+  fill: #64BA43;
+  r: 20px;
+  z-index: 40;
+}
+.TaskText {
+  font-size: 6px;
+  text-anchor:middle;
+  fill: #3A55A5;
+  r: 20px;
+  z-index: 41
+}
+.Task {
+  fill: #4FAEE6;
+  r: 20px;
+  z-index: 40;
+}
+
+.Template {
+  font-size: 10px;
+  fill: #0a17a9;
+    r: 12px;
+}
+.TemplateText {
+  font-size: 3px;
+  fill: #000000;
+    r: 8px;
+} 	
+.RA {
+  fill: #f6a901;
+  r: 20px;
+  z-index: 40;
+  position:relative;
+}
+.RAText {
+  font-size: 16px;
+  text-anchor:middle;
+  fill: #8f753c;
+  r: 20px;
+  z-index: 141
+}
+.WG {
+  font-size: 9px;
+  fill: #e6c57d;
+  z-index: 40
+}
+.WGText {
+  font-size: 9px;
+  fill: #f6a901;
+  text-anchor:middle;
+  z-index: 41
+}
+.Class {
+  font-size: 1px;
+  fill: #dddddd;
+   stroke-opacity: 0.1;
+   fill-opacity: 0.1;
+   z-index: -41
+}
+.ClassText {
+  font-size: 1px;
+  fill-opacity: 0.1;
+  fill: #dddddd;
+}
+.TemplateType {
+  font-size: 1px;
+  fill: #ffffff;
+}
+/*----------------------------------------------------*/
+
+</style>
+
+</head>
+	 <script>
+		function getMessage() {
+		   //d3.select("#d3").text("Classification:"+d3.select("#Contribution_Classification").node().value+" "+d3.select("#Contribution_Name").node().value);
+		   d3.select("#inputTEMPLATE").attr("transform","translate(400.0,335.0)");
+		   d3.select("#inputTEMPLATE").attr("class","Template");
+		   d3.select("#UserInputShape").attr("class","Template");
+		   d3.select("#UserInput").text(d3.select("#Contribution_Name").node().value);
+		console.log("test");
+		}
+	</script>
+	<div id="myRemoteContol" class="remoteContol">
+		<h3>LEXiCON</h3>
+		<input type="text" id="Contribution_Name" name="Contribution_Name" placeholder="Template Name Here">
+		<br>
+		<input type="text" id="Contribution_Classification" name="Contribution_Classification" placeholder="Pr_##_##_##_##" onchange="getMessage()"><br>
+		<button onclick="getMessage()">Submit</button>
+		<p id="d3"></p>
+	</div>
+	<div style="text-align:center;">
+		<svg id="r2" width="1940" height="1020" ><rect fill="#fff" width="100%" height="100%"></rect></svg> 
+	</div>
+
+
+
+
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script id="datasource">var graph = {
+  "nodes": [
+{"id": "Relevant Authority A","label": "Relevant Authority A", "group": 1, "status":"","type": "RA"},
+{"id": "Relevant Authority B","label": "Relevant Authority B", "group": 1, "status":"","type": "RA"},
+{"id": "Relevant Authority D","label": "Relevant Authority D", "group": 1, "status":"","type": "RA"},
+{"id": "Relevant Authority C","label": "Relevant Authority C", "group": 1, "status":"","type": "RA"},
+{"id": "Relevant Authority E","label": "Relevant Authority E", "group": 1, "status":"","type": "RA"},
+{"id": "Relevant Authority F","label": "Relevant Authority F", "group": 1, "status":"","type": "RA"},
+{"id": "Distribution boards","label": "Distribution boards", "group": 3, "status":"","type": "Template"},
+{"id": "Bus section control panel","label": "Bus section control panel", "group": 3, "status":"","type": "Template"},
+{"id": "Cable ways section panels","label": "Cable ways section panels", "group": 3, "status":"","type": "Template"},
+{"id": "Control circuit supplies panels","label": "Control circuit supplies panels", "group": 3, "status":"","type": "Template"},
+{"id": "Control panels","label": "Control panels", "group": 3, "status":"","type": "Template"},
+{"id": "Feeder control panels ","label": "Feeder control panels ", "group": 3, "status":"","type": "Template"},
+{"id": "Incoming supply control panels","label": "Incoming supply control panels", "group": 3, "status":"","type": "Template"},
+{"id": "Instrumentation, automation and control panels ","label": "Instrumentation, automation and control panels ", "group": 3, "status":"","type": "Template"},
+{"id": "Power factor correction control panels","label": "Power factor correction control panels", "group": 3, "status":"","type": "Template"},
+{"id": "Power quality filter section panels","label": "Power quality filter section panels", "group": 3, "status":"","type": "Template"},
+{"id": "Telemetry control panels","label": "Telemetry control panels", "group": 3, "status":"","type": "Template"},
+{"id": "Uninterruptible power supply control panels","label": "Uninterruptible power supply control panels", "group": 3, "status":"","type": "Template"},
+{"id": "Utility supply control panels ","label": "Utility supply control panels ", "group": 3, "status":"","type": "Template"},
+{"id": "Motor starters control panels","label": "Motor starters control panels", "group": 3, "status":"","type": "Template"},
+{"id": "Pr_60_70_22_22","label": "Pr_60_70_22_22", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_10","label": "Pr_75_50_18_10", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_11","label": "Pr_75_50_18_11", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_16","label": "Pr_75_50_18_16", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_17","label": "Pr_75_50_18_17", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_28","label": "Pr_75_50_18_28", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_40","label": "Pr_75_50_18_40", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_41","label": "Pr_75_50_18_41", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_67","label": "Pr_75_50_18_67", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_69","label": "Pr_75_50_18_69", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_90","label": "Pr_75_50_18_90", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_92","label": "Pr_75_50_18_92", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18_93","label": "Pr_75_50_18_93", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_51_52_22","label": "Pr_75_51_52_22", "group": 4, "status":"","type": "Class"},
+{"id": "Working Group A","label": "Working Group A", "group": 5, "status":"","type": "WG"},
+{"id": "Working Group B","label": "Working Group B", "group": 5, "status":"","type": "WG"},
+{"id": "Working Group C","label": "Working Group C", "group": 5, "status":"","type": "WG"},
+{"id": "Pr_65_53_86_55","label": "Pr_65_53_86_55", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_05","label": "Pr_65_53_96_05", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_06","label": "Pr_65_53_96_06", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_23","label": "Pr_65_53_96_23", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_63","label": "Pr_65_53_96_63", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_66","label": "Pr_65_53_96_66", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_70","label": "Pr_65_53_96_70", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_73","label": "Pr_65_53_96_73", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_78","label": "Pr_65_53_96_78", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_94","label": "Pr_65_53_96_94", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_95","label": "Pr_65_53_96_95", "group": 4, "status":"","type": "Class"},
+{"id": "Multistage pump ","label": "Multistage pump ", "group": 3, "status":"","type": "Template"},
+{"id": "Axially split casing pump","label": "Axially split casing pump", "group": 3, "status":"","type": "Template"},
+{"id": "End-suction (back-pull-out type) pump ","label": "End-suction (back-pull-out type) pump ", "group": 3, "status":"","type": "Template"},
+{"id": "Double disc pump ","label": "Double disc pump ", "group": 3, "status":"","type": "Template"},
+{"id": "Peristaltic pump","label": "Peristaltic pump", "group": 3, "status":"","type": "Template"},
+{"id": "Progressing cavity pump ","label": "Progressing cavity pump ", "group": 3, "status":"","type": "Template"},
+{"id": "Ram pump ","label": "Ram pump ", "group": 3, "status":"","type": "Template"},
+{"id": "Rotary lobe pump ","label": "Rotary lobe pump ", "group": 3, "status":"","type": "Template"},
+{"id": "Single diaphragm pump ","label": "Single diaphragm pump ", "group": 3, "status":"","type": "Template"},
+{"id": "Vertically suspended bowl type pump ","label": "Vertically suspended bowl type pump ", "group": 3, "status":"","type": "Template"},
+{"id": "Dry well sewage pump ","label": "Dry well sewage pump ", "group": 3, "status":"","type": "Template"},
+{"id": "Pr_60_45_30_52","label": "Pr_60_45_30_52", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_24_86","label": "Pr_65_53_24_86", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_94_45","label": "Pr_65_54_94_45", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_94_47","label": "Pr_65_54_94_47", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_94_55","label": "Pr_65_54_94_55", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_94_62","label": "Pr_65_54_94_62", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_94_87","label": "Pr_65_54_94_87", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_95_06","label": "Pr_65_54_95_06", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_95_11","label": "Pr_65_54_95_11", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_95_96","label": "Pr_65_54_95_96", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_57_96_99","label": "Pr_65_57_96_99", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_46_27","label": "Pr_75_50_46_27", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_46_30","label": "Pr_75_50_46_30", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_47_92","label": "Pr_75_50_47_92", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_76_68","label": "Pr_75_50_76_68", "group": 4, "status":"","type": "Class"},
+{"id": "Metal penstocks","label": "Metal penstocks", "group": 3, "status":"","type": "Template"},
+{"id": "Submersible pump unit","label": "Submersible pump unit", "group": 3, "status":"","type": "Template"},
+{"id": "Knife gate valves","label": "Knife gate valves", "group": 3, "status":"","type": "Template"},
+{"id": "Line pressure driven automatic control valves","label": "Line pressure driven automatic control valves", "group": 3, "status":"","type": "Template"},
+{"id": "Needle valves","label": "Needle valves", "group": 3, "status":"","type": "Template"},
+{"id": "Pilot Operated Valve","label": "Pilot Operated Valve", "group": 3, "status":"","type": "Template"},
+{"id": "Solenoid Valve","label": "Solenoid Valve", "group": 3, "status":"","type": "Template"},
+{"id": "Ball valves- Relevant Authority F","label": "Ball valves- Relevant Authority F", "group": 3, "status":"","type": "Template"},
+{"id": "Cast iron check valve","label": "Cast iron check valve", "group": 3, "status":"","type": "Template"},
+{"id": "Waterworks gate valves","label": "Waterworks gate valves", "group": 3, "status":"","type": "Template"},
+{"id": "Y Type Water Strainers","label": "Y Type Water Strainers", "group": 3, "status":"","type": "Template"},
+{"id": "Electronic Level Controllers and Switches","label": "Electronic Level Controllers and Switches", "group": 3, "status":"","type": "Template"},
+{"id": "Float Switches ","label": "Float Switches ", "group": 3, "status":"","type": "Template"},
+{"id": "Ultrasonic Sensor","label": "Ultrasonic Sensor", "group": 3, "status":"","type": "Template"},
+{"id": "Pressure Sensors","label": "Pressure Sensors", "group": 3, "status":"","type": "Template"},
+{"id": "Pr_60_45_76_22","label": "Pr_60_45_76_22", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_45_80_21","label": "Pr_60_45_80_21", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_45_80_24","label": "Pr_60_45_80_24", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_45_80_34","label": "Pr_60_45_80_34", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_45_80_75","label": "Pr_60_45_80_75", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_45_90_85","label": "Pr_60_45_90_85", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_11","label": "Pr_65_53_96_11", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96_62","label": "Pr_65_53_96_62", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_94_23","label": "Pr_65_54_94_23", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_80_96_07","label": "Pr_65_80_96_07", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_80_96_24","label": "Pr_65_80_96_24", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_80_96_79","label": "Pr_65_80_96_79", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_80_96_80","label": "Pr_65_80_96_80", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_60_36_72","label": "Pr_70_60_36_72", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_51_26_03","label": "Pr_75_51_26_03", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_75_30_65","label": "Pr_75_75_30_65", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_80_77_28_98","label": "Pr_80_77_28_98", "group": 4, "status":"","type": "Class"},
+{"id": "Decanter_Centrifuges","label": "Decanter_Centrifuges", "group": 3, "status":"","type": "Template"},
+{"id": "Disc_Thickeners ","label": "Disc_Thickeners ", "group": 3, "status":"","type": "Template"},
+{"id": "Drum_Thickeners ","label": "Drum_Thickeners ", "group": 3, "status":"","type": "Template"},
+{"id": "Gravity_Belt_Thickeners","label": "Gravity_Belt_Thickeners", "group": 3, "status":"","type": "Template"},
+{"id": "Screw_Thickeners","label": "Screw_Thickeners", "group": 3, "status":"","type": "Template"},
+{"id": "Submersible Mixers- Relevant Authority F Standards Library PDT Template ","label": "Submersible Mixers- Relevant Authority F Standards Library PDT Template ", "group": 3, "status":"","type": "Template"},
+{"id": "Canister-mounted submersible  pump unit - Relevant Authority F PDT Template ","label": "Canister-mounted submersible  pump unit - Relevant Authority F PDT Template ", "group": 3, "status":"","type": "Template"},
+{"id": "Pipe-mounted submersible  pump unit - Relevant Authority F PDT Template","label": "Pipe-mounted submersible  pump unit - Relevant Authority F PDT Template", "group": 3, "status":"","type": "Template"},
+{"id": "Direct spring operated pressure relief valves","label": "Direct spring operated pressure relief valves", "group": 3, "status":"","type": "Template"},
+{"id": "Belt_Conveyors ","label": "Belt_Conveyors ", "group": 3, "status":"","type": "Template"},
+{"id": "Drag_or_Chain_Link_Conveyors ","label": "Drag_or_Chain_Link_Conveyors ", "group": 3, "status":"","type": "Template"},
+{"id": "Shafted_Screw_Conveyors ","label": "Shafted_Screw_Conveyors ", "group": 3, "status":"","type": "Template"},
+{"id": "Shaftless_Spiral_Conveyors ","label": "Shaftless_Spiral_Conveyors ", "group": 3, "status":"","type": "Template"},
+{"id": "Radiant Tube Heaters ","label": "Radiant Tube Heaters ", "group": 3, "status":"","type": "Template"},
+{"id": "Alternating current (a.c.) squirrel cage induction motor ","label": "Alternating current (a.c.) squirrel cage induction motor ", "group": 3, "status":"","type": "Template"},
+{"id": "Point smoke detectors ","label": "Point smoke detectors ", "group": 3, "status":"","type": "Template"},
+{"id": "Weatherproof_equipment_enclosures ","label": "Weatherproof_equipment_enclosures ", "group": 3, "status":"","type": "Template"},
+{"id": "Air Grille Diffuser","label": "Air Grille Diffuser", "group": 3, "status":"","type": "Template"},
+{"id": "Air Heater Gas Oil","label": "Air Heater Gas Oil", "group": 3, "status":"","type": "Template"},
+{"id": "Air To Water Heat Pump","label": "Air To Water Heat Pump", "group": 3, "status":"","type": "Template"},
+{"id": "Bespoke LV Assembly","label": "Bespoke LV Assembly", "group": 3, "status":"","type": "Template"},
+{"id": "Boiler","label": "Boiler", "group": 3, "status":"","type": "Template"},
+{"id": "Burner Gas Oil","label": "Burner Gas Oil", "group": 3, "status":"","type": "Template"},
+{"id": "Busbar Systems","label": "Busbar Systems", "group": 3, "status":"","type": "Template"},
+{"id": "Cable Ladder Systems","label": "Cable Ladder Systems", "group": 3, "status":"","type": "Template"},
+{"id": "Cable Tray System","label": "Cable Tray System", "group": 3, "status":"","type": "Template"},
+{"id": "Cavity Floor Grommet","label": "Cavity Floor Grommet", "group": 3, "status":"","type": "Template"},
+{"id": "Circuit Breakers For Overcurrent Protection","label": "Circuit Breakers For Overcurrent Protection", "group": 3, "status":"","type": "Template"},
+{"id": "COBie Parameters","label": "COBie Parameters", "group": 3, "status":"","type": "Template"},
+{"id": "Combined Heat and Power","label": "Combined Heat and Power", "group": 3, "status":"","type": "Template"},
+{"id": "Cooling Coil","label": "Cooling Coil", "group": 3, "status":"","type": "Template"},
+{"id": "Cut Out Assemblies","label": "Cut Out Assemblies", "group": 3, "status":"","type": "Template"},
+{"id": "Deaerator And Dirt Separator","label": "Deaerator And Dirt Separator", "group": 3, "status":"","type": "Template"},
+{"id": "Distribution Skirting Dado Trunking","label": "Distribution Skirting Dado Trunking", "group": 3, "status":"","type": "Template"},
+{"id": "Ducted Fume Cupboards","label": "Ducted Fume Cupboards", "group": 3, "status":"","type": "Template"},
+{"id": "Electrical Panel LV","label": "Electrical Panel LV", "group": 3, "status":"","type": "Template"},
+{"id": "Fan Convector Unit","label": "Fan Convector Unit", "group": 3, "status":"","type": "Template"},
+{"id": "Floor Trunking Systems","label": "Floor Trunking Systems", "group": 3, "status":"","type": "Template"},
+{"id": "Gas Absorption Heat Pump","label": "Gas Absorption Heat Pump", "group": 3, "status":"","type": "Template"},
+{"id": "Gas Booster","label": "Gas Booster", "group": 3, "status":"","type": "Template"},
+{"id": "Heat Detector","label": "Heat Detector", "group": 3, "status":"","type": "Template"},
+{"id": "Heater Battery","label": "Heater Battery", "group": 3, "status":"","type": "Template"},
+{"id": "Isolation Valve","label": "Isolation Valve", "group": 3, "status":"","type": "Template"},
+{"id": "Low Voltage HRC Fuses","label": "Low Voltage HRC Fuses", "group": 3, "status":"","type": "Template"},
+{"id": "Luminaire","label": "Luminaire", "group": 3, "status":"","type": "Template"},
+{"id": "Manhole","label": "Manhole", "group": 3, "status":"","type": "Template"},
+{"id": "PDT-Master-Template","label": "PDT-Master-Template", "group": 3, "status":"","type": "Template"},
+{"id": "Plate Heat Exchanger","label": "Plate Heat Exchanger", "group": 3, "status":"","type": "Template"},
+{"id": "Portable Energy Monitoring Equipment","label": "Portable Energy Monitoring Equipment", "group": 3, "status":"","type": "Template"},
+{"id": "Powertrack Systems Underfloor Busbar","label": "Powertrack Systems Underfloor Busbar", "group": 3, "status":"","type": "Template"},
+{"id": "Pumps","label": "Pumps", "group": 3, "status":"","type": "Template"},
+{"id": "Radiant Panel","label": "Radiant Panel", "group": 3, "status":"","type": "Template"},
+{"id": "Radiant Tube Heater","label": "Radiant Tube Heater", "group": 3, "status":"","type": "Template"},
+{"id": "Radiator","label": "Radiator", "group": 3, "status":"","type": "Template"},
+{"id": "RCBO Residual Current Circuit Breakers","label": "RCBO Residual Current Circuit Breakers", "group": 3, "status":"","type": "Template"},
+{"id": "RCCB Residual Current Circuit Breakers","label": "RCCB Residual Current Circuit Breakers", "group": 3, "status":"","type": "Template"},
+{"id": "Recirculating Fume Cupboards","label": "Recirculating Fume Cupboards", "group": 3, "status":"","type": "Template"},
+{"id": "Sensor CO2 Monitor","label": "Sensor CO2 Monitor", "group": 3, "status":"","type": "Template"},
+{"id": "Shell Boiler Relevant Authority E CastIron StainlessRelevant Authority E","label": "Shell Boiler Relevant Authority E CastIron StainlessRelevant Authority E", "group": 3, "status":"","type": "Template"},
+{"id": "Smoke Detector","label": "Smoke Detector", "group": 3, "status":"","type": "Template"},
+{"id": "Sprinkler Head","label": "Sprinkler Head", "group": 3, "status":"","type": "Template"},
+{"id": "Relevant Authority E Wire Cable Tray Basket Or Mesh","label": "Relevant Authority E Wire Cable Tray Basket Or Mesh", "group": 3, "status":"","type": "Template"},
+{"id": "Tank","label": "Tank", "group": 3, "status":"","type": "Template"},
+{"id": "Thermostatic Mixing Valve","label": "Thermostatic Mixing Valve", "group": 3, "status":"","type": "Template"},
+{"id": "UV Steriliser","label": "UV Steriliser", "group": 3, "status":"","type": "Template"},
+{"id": "Water Boiler Potable","label": "Water Boiler Potable", "group": 3, "status":"","type": "Template"},
+{"id": "Water Heater Circulating Gas Or Oil","label": "Water Heater Circulating Gas Or Oil", "group": 3, "status":"","type": "Template"},
+{"id": "Water Heater Storage Gas Oil","label": "Water Heater Storage Gas Oil", "group": 3, "status":"","type": "Template"},
+{"id": "Pr_65_72_97_52","label": "Pr_65_72_97_52", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_70_48_66","label": "Pr_60_70_48_66", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_70_11_14","label": "Pr_65_70_11_14", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_70_11_17","label": "Pr_65_70_11_17", "group": 4, "status":"","type": "Class"},
+{"id": "35-11 23 23 1","label": "35-11 23 23 1", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_55_97_84","label": "Pr_70_55_97_84", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_60_96","label": "Pr_60_60_96", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_72_27_52","label": "Pr_65_72_27_52", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_65_37","label": "Pr_60_65_37", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53","label": "Pr_65_53", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_60_08","label": "Pr_60_60_08", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_60_36_73","label": "Pr_70_60_36_73", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_70_22","label": "Pr_60_70_22", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_60_37_34","label": "Pr_70_60_37_34", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_65_31","label": "Pr_60_65_31", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_60_36_71","label": "Pr_70_60_36_71", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_95_88","label": "Pr_65_54_95_88", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_70_48_46","label": "Pr_60_70_48_46", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_70_48","label": "Pr_70_70_48", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_50_96","label": "Pr_60_50_96", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_60_36_93","label": "Pr_70_60_36_93", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_70_51_84","label": "Pr_40_70_51_84", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_55_76_15","label": "Pr_65_55_76_15", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_70_48_27","label": "Pr_60_70_48_27", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_40_44","label": "Pr_65_54_40_44", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_86_33","label": "Pr_65_53_86_33", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_70_65_60","label": "Pr_60_70_65_60", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_60_38_62","label": "Pr_60_60_38_62", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_70_11_18","label": "Pr_65_70_11_18", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_75_30_64","label": "Pr_75_75_30_64", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_52_01_01","label": "Pr_65_52_01_01", "group": 4, "status":"","type": "Class"},
+{"id": "notdefined","label": "notdefined", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_70_11_12","label": "Pr_65_70_11_12", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_60_37_04","label": "Pr_70_60_37_04", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_76_02","label": "Pr_75_50_76_02", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_65_31_71","label": "Pr_60_65_31_71", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_70_11_31","label": "Pr_65_70_11_31", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_60_36_30","label": "Pr_70_60_36_30", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_72_27_72","label": "Pr_65_72_27_72", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_65_04","label": "Pr_70_65_04", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_72_27_73","label": "Pr_65_72_27_73", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_60_10","label": "Pr_60_60_10", "group": 4, "status":"","type": "Class"},
+{"id": "Uniclass2015","label": "Uniclass2015", "group": 7, "status":"","type": ""},
+{"id": "OmniClass","label": "OmniClass", "group": 7, "status":"","type": ""},
+{"id": "Door Catches","label": "Door Catches", "group": 3, "status":"","type": "Template"},
+{"id": "Door Restrictors","label": "Door Restrictors", "group": 3, "status":"","type": "Template"},
+{"id": "Finger Protection","label": "Finger Protection", "group": 3, "status":"","type": "Template"},
+{"id": "Door Viewers","label": "Door Viewers", "group": 3, "status":"","type": "Template"},
+{"id": "Mechanical Door Bolts","label": "Mechanical Door Bolts", "group": 3, "status":"","type": "Template"},
+{"id": "Sockets for Bolts","label": "Sockets for Bolts", "group": 3, "status":"","type": "Template"},
+{"id": "Door Stops","label": "Door Stops", "group": 3, "status":"","type": "Template"},
+{"id": "Letterplates","label": "Letterplates", "group": 3, "status":"","type": "Template"},
+{"id": "Ancillaries","label": "Ancillaries", "group": 4, "status":"","type": "Class"},
+{"id": "Closing Devices","label": "Closing Devices", "group": 4, "status":"","type": "Class"},
+{"id": "Door Furniture","label": "Door Furniture", "group": 4, "status":"","type": "Class"},
+{"id": "Co-ordinators","label": "Co-ordinators", "group": 3, "status":"","type": "Template"},
+{"id": "Control Closer","label": "Control Closer", "group": 3, "status":"","type": "Template"},
+{"id": "Emag Hold Open Closer","label": "Emag Hold Open Closer", "group": 3, "status":"","type": "Template"},
+{"id": "Fingerplates","label": "Fingerplates", "group": 3, "status":"","type": "Template"},
+{"id": "Kickplates","label": "Kickplates", "group": 3, "status":"","type": "Template"},
+{"id": "Pull Handles","label": "Pull Handles", "group": 3, "status":"","type": "Template"},
+{"id": "Turn Releases","label": "Turn Releases", "group": 3, "status":"","type": "Template"},
+{"id": "Levers Knobs","label": "Levers Knobs", "group": 3, "status":"","type": "Template"},
+{"id": "Pocket Doors","label": "Pocket Doors", "group": 3, "status":"","type": "Template"},
+{"id": "Sliding Folding Doors","label": "Sliding Folding Doors", "group": 3, "status":"","type": "Template"},
+{"id": "Door Systems","label": "Door Systems", "group": 4, "status":"","type": "Class"},
+{"id": "Exit Devices","label": "Exit Devices", "group": 4, "status":"","type": "Class"},
+{"id": "Emergency Exit Hardware","label": "Emergency Exit Hardware", "group": 3, "status":"","type": "Template"},
+{"id": "Panic Hardware","label": "Panic Hardware", "group": 3, "status":"","type": "Template"},
+{"id": "Hinges","label": "Hinges", "group": 3, "status":"","type": "Template"},
+{"id": "Hanging Devices","label": "Hanging Devices", "group": 4, "status":"","type": "Class"},
+{"id": "Intumescent Acoustic","label": "Intumescent Acoustic", "group": 4, "status":"","type": "Class"},
+{"id": "Acoustic Seals","label": "Acoustic Seals", "group": 3, "status":"","type": "Template"},
+{"id": "Air Transfer Grills","label": "Air Transfer Grills", "group": 3, "status":"","type": "Template"},
+{"id": "Intumescent Protection","label": "Intumescent Protection", "group": 3, "status":"","type": "Template"},
+{"id": "Internal Fire Smoke Seals","label": "Internal Fire Smoke Seals", "group": 3, "status":"","type": "Template"},
+{"id": "Electric Strikes","label": "Electric Strikes", "group": 3, "status":"","type": "Template"},
+{"id": "Electronic Mechanical Locks","label": "Electronic Mechanical Locks", "group": 3, "status":"","type": "Template"},
+{"id": "Mechanical Digital Locks","label": "Mechanical Digital Locks", "group": 3, "status":"","type": "Template"},
+{"id": "Mechanical Cylinders","label": "Mechanical Cylinders", "group": 3, "status":"","type": "Template"},
+{"id": "Mechanical Locks","label": "Mechanical Locks", "group": 3, "status":"","type": "Template"},
+{"id": "Mechatronic Cylinders","label": "Mechatronic Cylinders", "group": 3, "status":"","type": "Template"},
+{"id": "Bespoke Signage","label": "Bespoke Signage", "group": 3, "status":"","type": "Template"},
+{"id": "Signs Symbols","label": "Signs Symbols", "group": 3, "status":"","type": "Template"},
+{"id": "Signage","label": "Signage", "group": 4, "status":"","type": "Class"},
+{"id": "Locking Devices","label": "Locking Devices", "group": 4, "status":"","type": "Class"},
+{"id": "35-11 23 23","label": "35-11 23 23", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_70_51","label": "Pr_40_70_51", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_45_30","label": "Pr_60_45_30", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_45_76","label": "Pr_60_45_76", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_45_80","label": "Pr_60_45_80", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_45_90","label": "Pr_60_45_90", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_60_38","label": "Pr_60_60_38", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_70_48","label": "Pr_60_70_48", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_70_65","label": "Pr_60_70_65", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_52_01","label": "Pr_65_52_01", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_24","label": "Pr_65_53_24", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_86","label": "Pr_65_53_86", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_53_96","label": "Pr_65_53_96", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_40","label": "Pr_65_54_40", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_94","label": "Pr_65_54_94", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54_95","label": "Pr_65_54_95", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_55_76","label": "Pr_65_55_76", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_57_96","label": "Pr_65_57_96", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_70_11","label": "Pr_65_70_11", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_72_27","label": "Pr_65_72_27", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_72_97","label": "Pr_65_72_97", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_80_96","label": "Pr_65_80_96", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_55_97","label": "Pr_70_55_97", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_60_36","label": "Pr_70_60_36", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_60_37","label": "Pr_70_60_37", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_18","label": "Pr_75_50_18", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_46","label": "Pr_75_50_46", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_47","label": "Pr_75_50_47", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50_76","label": "Pr_75_50_76", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_51_26","label": "Pr_75_51_26", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_51_52","label": "Pr_75_51_52", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_75_30","label": "Pr_75_75_30", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_80_77_28","label": "Pr_80_77_28", "group": 4, "status":"","type": "Class"},
+{"id": "35-11 23","label": "35-11 23", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_70","label": "Pr_40_70", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_45","label": "Pr_60_45", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_60","label": "Pr_60_60", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_65","label": "Pr_60_65", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_60_70","label": "Pr_60_70", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_52","label": "Pr_65_52", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_54","label": "Pr_65_54", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_55","label": "Pr_65_55", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_57","label": "Pr_65_57", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_70","label": "Pr_65_70", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_72","label": "Pr_65_72", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_80","label": "Pr_65_80", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_55","label": "Pr_70_55", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_70_60","label": "Pr_70_60", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_50","label": "Pr_75_50", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_51","label": "Pr_75_51", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_75","label": "Pr_75_75", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_80_77","label": "Pr_80_77", "group": 4, "status":"","type": "Class"},
+{"id": "Pr","label": "Pr", "group": 8, "status":"","type": "TemplateType"},
+{"id": "Ss","label": "Ss", "group": 8, "status":"","type": "TemplateType"},
+{"id": "FI","label": "FI", "group": 8, "status":"","type": "TemplateType"},
+{"id": "Ro","label": "Ro", "group": 8, "status":"","type": "TemplateType"},
+{"id": "PM","label": "PM", "group": 8, "status":"","type": "TemplateType"},
+{"id": "EF","label": "EF", "group": 8, "status":"","type": "TemplateType"},
+{"id": "En","label": "En", "group": 8, "status":"","type": "TemplateType"},
+{"id": "Co","label": "Co", "group": 8, "status":"","type": "TemplateType"},
+{"id": "Ac","label": "Ac", "group": 8, "status":"","type": "TemplateType"},
+{"id": "Pr_30_36_08_23","label": "Pr_30_36_08_23", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_59_24","label": "Pr_30_36_59_24", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_59_57","label": "Pr_30_59_57", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_33_76","label": "Pr_30_36_33_76", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_08_22","label": "Pr_30_36_08_22", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_08","label": "Pr_30_36_08", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_33_24","label": "Pr_30_36_33_24", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_30_50_49","label": "Pr_40_30_50_49", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_59","label": "Pr_30_36_59", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_59_15","label": "Pr_30_36_59_15", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_30_23_26","label": "Pr_75_30_23_26", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_33_29","label": "Pr_30_36_33_29", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_33_45","label": "Pr_30_36_33_45", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_59_64","label": "Pr_30_36_59_64", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_30_30_28","label": "Pr_75_30_30_28", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_59_45","label": "Pr_30_36_59_45", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_59_24_80","label": "Pr_30_59_24_80", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_59_24_81","label": "Pr_30_59_24_81", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_08_28","label": "Pr_30_36_08_28", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_08_63","label": "Pr_30_36_08_63", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_36","label": "Pr_30_36_36", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_35_90_33_23","label": "Pr_35_90_33_23", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_59_94_06","label": "Pr_30_59_94_06", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_31_76_40","label": "Pr_30_31_76_40", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_65_24_42","label": "Pr_65_65_24_42", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_30_27_26","label": "Pr_75_30_27_26", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_30_27_27","label": "Pr_75_30_27_27", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_50_13_51","label": "Pr_40_50_13_51", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_10_57","label": "Pr_40_10_57", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_10_77_32","label": "Pr_40_10_77_32", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36","label": "Pr_30_36", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_59","label": "Pr_30_59", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_30","label": "Pr_40_30", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_30","label": "Pr_75_30", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_35_90","label": "Pr_35_90", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_31","label": "Pr_30_31", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_65","label": "Pr_65_65", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_50","label": "Pr_40_50", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_10","label": "Pr_40_10", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_36_33","label": "Pr_30_36_33", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_30_50","label": "Pr_40_30_50", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_30_23","label": "Pr_75_30_23", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_30_30","label": "Pr_75_30_30", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_59_24","label": "Pr_30_59_24", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_35_90_33","label": "Pr_35_90_33", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_59_94","label": "Pr_30_59_94", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_30_31_76","label": "Pr_30_31_76", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_65_65_24","label": "Pr_65_65_24", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_75_30_27","label": "Pr_75_30_27", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_50_13","label": "Pr_40_50_13", "group": 4, "status":"","type": "Class"},
+{"id": "Pr_40_10_77","label": "Pr_40_10_77", "group": 4, "status":"","type": "Class"},
+  ],
+  "links": [
+{"source": "Relevant Authority F", "target": "Working Group A", "value": 2, "type": "RAWG", "label": ""},
+{"source": "Relevant Authority F", "target": "Working Group B", "value": 2, "type": "RAWG"},
+{"source": "Relevant Authority F", "target": "Working Group C", "value": 2, "type": "RAWG"},
+{"source": "35-11 23 23 1", "target": "Portable Energy Monitoring Equipment", "value": 3, "type": ""},
+{"source": "notdefined", "target": "PDT-Master-Template", "value": 3, "type": ""},
+{"source": "Pr_40_70_51_84", "target": "UV Steriliser", "value": 3, "type": ""},
+{"source": "Pr_60_45_30_52", "target": "Metal penstocks", "value": 3, "type": ""},
+{"source": "Pr_60_45_76_22", "target": "Decanter_Centrifuges", "value": 3, "type": ""},
+{"source": "Pr_60_45_80_21", "target": "Disc_Thickeners ", "value": 3, "type": ""},
+{"source": "Pr_60_45_80_24", "target": "Drum_Thickeners ", "value": 3, "type": ""},
+{"source": "Pr_60_45_80_34", "target": "Gravity_Belt_Thickeners", "value": 3, "type": ""},
+{"source": "Pr_60_45_80_75", "target": "Screw_Thickeners", "value": 3, "type": ""},
+{"source": "Pr_60_45_90_85", "target": "Submersible Mixers- Relevant Authority F Standards Library PDT Template ", "value": 3, "type": ""},
+{"source": "Pr_60_50_96", "target": "Tank", "value": 4, "type": ""},
+{"source": "Pr_60_60_08", "target": "Shell Boiler Relevant Authority E CastIron StainlessRelevant Authority E", "value": 4, "type": ""},
+{"source": "Pr_60_60_08", "target": "Boiler", "value": 4, "type": ""},
+{"source": "Pr_60_60_10", "target": "Burner Gas Oil", "value": 4, "type": ""},
+{"source": "Pr_60_60_38_62", "target": "Plate Heat Exchanger", "value": 3, "type": ""},
+{"source": "Pr_60_60_96", "target": "Water Heater Circulating Gas Or Oil", "value": 4, "type": ""},
+{"source": "Pr_60_60_96", "target": "Water Heater Storage Gas Oil", "value": 4, "type": ""},
+{"source": "Pr_60_60_96", "target": "Water Boiler Potable", "value": 4, "type": ""},
+{"source": "Pr_60_65_31", "target": "Ducted Fume Cupboards", "value": 4, "type": ""},
+{"source": "Pr_60_65_31_71", "target": "Recirculating Fume Cupboards", "value": 3, "type": ""},
+{"source": "Pr_60_65_37", "target": "Heater Battery", "value": 4, "type": ""},
+{"source": "Pr_60_65_37", "target": "Cooling Coil", "value": 4, "type": ""},
+{"source": "Pr_60_70_22", "target": "Bespoke LV Assembly", "value": 4, "type": ""},
+{"source": "Pr_60_70_22_22", "target": "Distribution boards", "value": 3, "type": ""},
+{"source": "Pr_60_70_22_22", "target": "Electrical Panel LV", "value": 3, "type": ""},
+{"source": "Pr_60_70_48_27", "target": "Cut Out Assemblies", "value": 3, "type": ""},
+{"source": "Pr_60_70_48_46", "target": "Low Voltage HRC Fuses", "value": 3, "type": ""},
+{"source": "Pr_60_70_48_66", "target": "Powertrack Systems Underfloor Busbar", "value": 3, "type": ""},
+{"source": "Pr_60_70_48_66", "target": "Busbar Systems", "value": 3, "type": ""},
+{"source": "Pr_60_70_65_60", "target": "Combined Heat and Power", "value": 3, "type": ""},
+{"source": "Pr_65_52_01_01", "target": "Manhole", "value": 3, "type": ""},
+{"source": "Pr_65_53", "target": "Pumps", "value": 4, "type": ""},
+{"source": "Pr_65_53_24_86", "target": "Submersible pump unit", "value": 3, "type": ""},
+{"source": "Pr_65_53_86_33", "target": "Gas Booster", "value": 3, "type": ""},
+{"source": "Pr_65_53_86_55", "target": "Multistage pump ", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_05", "target": "Axially split casing pump", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_06", "target": "End-suction (back-pull-out type) pump ", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_11", "target": "Canister-mounted submersible  pump unit - Relevant Authority F PDT Template ", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_23", "target": "Double disc pump ", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_62", "target": "Pipe-mounted submersible  pump unit - Relevant Authority F PDT Template", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_63", "target": "Peristaltic pump", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_66", "target": "Progressing cavity pump ", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_70", "target": "Ram pump ", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_73", "target": "Rotary lobe pump ", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_78", "target": "Single diaphragm pump ", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_94", "target": "Vertically suspended bowl type pump ", "value": 3, "type": ""},
+{"source": "Pr_65_53_96_95", "target": "Dry well sewage pump ", "value": 3, "type": ""},
+{"source": "Pr_65_54_40_44", "target": "Isolation Valve", "value": 3, "type": ""},
+{"source": "Pr_65_54_94_23", "target": "Direct spring operated pressure relief valves", "value": 3, "type": ""},
+{"source": "Pr_65_54_94_45", "target": "Knife gate valves", "value": 3, "type": ""},
+{"source": "Pr_65_54_94_47", "target": "Line pressure driven automatic control valves", "value": 3, "type": ""},
+{"source": "Pr_65_54_94_55", "target": "Needle valves", "value": 3, "type": ""},
+{"source": "Pr_65_54_94_62", "target": "Pilot Operated Valve", "value": 3, "type": ""},
+{"source": "Pr_65_54_94_87", "target": "Solenoid Valve", "value": 3, "type": ""},
+{"source": "Pr_65_54_95_06", "target": "Ball valves- Relevant Authority F", "value": 3, "type": ""},
+{"source": "Pr_65_54_95_11", "target": "Cast iron check valve", "value": 3, "type": ""},
+{"source": "Pr_65_54_95_88", "target": "Thermostatic Mixing Valve", "value": 3, "type": ""},
+{"source": "Pr_65_54_95_96", "target": "Waterworks gate valves", "value": 3, "type": ""},
+{"source": "Pr_65_55_76_15", "target": "Deaerator And Dirt Separator", "value": 3, "type": ""},
+{"source": "Pr_65_57_96_99", "target": "Y Type Water Strainers", "value": 3, "type": ""},
+{"source": "Pr_65_70_11_12", "target": "Relevant Authority E Wire Cable Tray Basket Or Mesh", "value": 3, "type": ""},
+{"source": "Pr_65_70_11_14", "target": "Cable Ladder Systems", "value": 3, "type": ""},
+{"source": "Pr_65_70_11_17", "target": "Cable Tray System", "value": 3, "type": ""},
+{"source": "Pr_65_70_11_18", "target": "Distribution Skirting Dado Trunking", "value": 3, "type": ""},
+{"source": "Pr_65_70_11_31", "target": "Floor Trunking Systems", "value": 3, "type": ""},
+{"source": "Pr_65_72_27_52", "target": "Circuit Breakers For Overcurrent Protection", "value": 3, "type": ""},
+{"source": "Pr_65_72_27_72", "target": "RCCB Residual Current Circuit Breakers", "value": 3, "type": ""},
+{"source": "Pr_65_72_27_73", "target": "RCBO Residual Current Circuit Breakers", "value": 3, "type": ""},
+{"source": "Pr_65_72_97_52", "target": "Cavity Floor Grommet", "value": 3, "type": ""},
+{"source": "Pr_65_80_96_07", "target": "Belt_Conveyors ", "value": 3, "type": ""},
+{"source": "Pr_65_80_96_24", "target": "Drag_or_Chain_Link_Conveyors ", "value": 3, "type": ""},
+{"source": "Pr_65_80_96_79", "target": "Shafted_Screw_Conveyors ", "value": 3, "type": ""},
+{"source": "Pr_65_80_96_80", "target": "Shaftless_Spiral_Conveyors ", "value": 3, "type": ""},
+{"source": "Pr_70_55_97_84", "target": "Sprinkler Head", "value": 3, "type": ""},
+{"source": "Pr_70_60_36_30", "target": "Fan Convector Unit", "value": 3, "type": ""},
+{"source": "Pr_70_60_36_71", "target": "Radiant Panel", "value": 3, "type": ""},
+{"source": "Pr_70_60_36_72", "target": "Radiant Tube Heaters ", "value": 3, "type": ""},
+{"source": "Pr_70_60_36_72", "target": "Radiant Tube Heater", "value": 3, "type": ""},
+{"source": "Pr_70_60_36_73", "target": "Radiator", "value": 3, "type": ""},
+{"source": "Pr_70_60_36_93", "target": "Air Heater Gas Oil", "value": 3, "type": ""},
+{"source": "Pr_70_60_37_04", "target": "Air To Water Heat Pump", "value": 3, "type": ""},
+{"source": "Pr_70_60_37_34", "target": "Gas Absorption Heat Pump", "value": 3, "type": ""},
+{"source": "Pr_70_65_04", "target": "Air Grille Diffuser", "value": 4, "type": ""},
+{"source": "Pr_70_70_48", "target": "Luminaire", "value": 4, "type": ""},
+{"source": "Pr_75_50_18_10", "target": "Bus section control panel", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_11", "target": "Cable ways section panels", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_16", "target": "Control circuit supplies panels", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_17", "target": "Control panels", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_28", "target": "Feeder control panels ", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_40", "target": "Incoming supply control panels", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_41", "target": "Instrumentation, automation and control panels ", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_67", "target": "Power factor correction control panels", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_69", "target": "Power quality filter section panels", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_90", "target": "Telemetry control panels", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_92", "target": "Uninterruptible power supply control panels", "value": 3, "type": ""},
+{"source": "Pr_75_50_18_93", "target": "Utility supply control panels ", "value": 3, "type": ""},
+{"source": "Pr_75_50_46_27", "target": "Electronic Level Controllers and Switches", "value": 3, "type": ""},
+{"source": "Pr_75_50_46_30", "target": "Float Switches ", "value": 3, "type": ""},
+{"source": "Pr_75_50_47_92", "target": "Ultrasonic Sensor", "value": 3, "type": ""},
+{"source": "Pr_75_50_76_02", "target": "Sensor CO2 Monitor", "value": 3, "type": ""},
+{"source": "Pr_75_50_76_68", "target": "Pressure Sensors", "value": 3, "type": ""},
+{"source": "Pr_75_51_26_03", "target": "Alternating current (a.c.) squirrel cage induction motor ", "value": 3, "type": ""},
+{"source": "Pr_75_51_52_22", "target": "Motor starters control panels", "value": 3, "type": ""},
+{"source": "Pr_75_75_30_64", "target": "Heat Detector", "value": 3, "type": ""},
+{"source": "Pr_75_75_30_65", "target": "Point smoke detectors ", "value": 3, "type": ""},
+{"source": "Pr_75_75_30_65", "target": "Smoke Detector", "value": 3, "type": ""},
+{"source": "Pr_80_77_28_98", "target": "Weatherproof_equipment_enclosures ", "value": 3, "type": ""},
+{"source": "OmniClass", "target": "35-11 23 23 1", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_72_97_52", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_70_48_66", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_75_75_30_65", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_70_11_14", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_70_11_17", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_70_55_97_84", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_60_96", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_72_27_52", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_65_37", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_53", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_70_60_36_72", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_60_08", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_70_60_36_73", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_70_22", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_70_60_37_34", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_65_31", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_70_60_36_71", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_54_95_88", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_70_48_46", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_70_70_48", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_50_96", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_70_60_36_93", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_40_70_51_84", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_55_76_15", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_70_48_27", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_54_40_44", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_53_86_33", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_70_65_60", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_60_38_62", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_70_11_18", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_75_75_30_64", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_52_01_01", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_70_11_12", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_70_60_37_04", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_75_50_76_02", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_65_31_71", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_70_11_31", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_70_60_36_30", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_72_27_72", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_70_65_04", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_65_72_27_73", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_70_22_22", "value": 5, "type": ""},
+{"source": "Uniclass2015", "target": "Pr_60_60_10", "value": 5, "type": ""},
+{"source": "Relevant Authority A", "target": "Air Grille Diffuser", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Air Heater Gas Oil", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Air To Water Heat Pump", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Bespoke LV Assembly", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Boiler", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Burner Gas Oil", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Busbar Systems", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Cable Ladder Systems", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Cable Tray System", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Cavity Floor Grommet", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Circuit Breakers For Overcurrent Protection", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "COBie Parameters", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Combined Heat and Power", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Cooling Coil", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Cut Out Assemblies", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Deaerator And Dirt Separator", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Distribution Skirting Dado Trunking", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Ducted Fume Cupboards", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Electrical Panel LV", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Fan Convector Unit", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Floor Trunking Systems", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Gas Absorption Heat Pump", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Gas Booster", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Heat Detector", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Heater Battery", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Isolation Valve", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Low Voltage HRC Fuses", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Luminaire", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Manhole", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "PDT-Master-Template", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Plate Heat Exchanger", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Portable Energy Monitoring Equipment", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Powertrack Systems Underfloor Busbar", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Pumps", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Radiant Panel", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Radiant Tube Heater", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Radiator", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "RCBO Residual Current Circuit Breakers", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "RCCB Residual Current Circuit Breakers", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Recirculating Fume Cupboards", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Sensor CO2 Monitor", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Shell Boiler Relevant Authority E CastIron StainlessRelevant Authority E", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Smoke Detector", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Sprinkler Head", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Relevant Authority E Wire Cable Tray Basket Or Mesh", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Tank", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Thermostatic Mixing Valve", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "UV Steriliser", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Water Boiler Potable", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Water Heater Circulating Gas Or Oil", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority A", "target": "Water Heater Storage Gas Oil", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Distribution boards", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Bus section control panel", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Cable ways section panels", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Control circuit supplies panels", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Control panels", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Feeder control panels ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Incoming supply control panels", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Instrumentation, automation and control panels ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Power factor correction control panels", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Power quality filter section panels", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Telemetry control panels", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Uninterruptible power supply control panels", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Utility supply control panels ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Motor starters control panels", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Metal penstocks", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Submersible pump unit", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Knife gate valves", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Line pressure driven automatic control valves", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Needle valves", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Pilot Operated Valve", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Solenoid Valve", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Ball valves- Relevant Authority F", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Cast iron check valve", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Waterworks gate valves", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Y Type Water Strainers", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Electronic Level Controllers and Switches", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Float Switches ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Ultrasonic Sensor", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Pressure Sensors", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Decanter_Centrifuges", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Disc_Thickeners ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Drum_Thickeners ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Gravity_Belt_Thickeners", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Screw_Thickeners", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Submersible Mixers- Relevant Authority F Standards Library PDT Template ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Canister-mounted submersible  pump unit - Relevant Authority F PDT Template ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group A", "target": "Pipe-mounted submersible  pump unit - Relevant Authority F PDT Template", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group C", "target": "Direct spring operated pressure relief valves", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group C", "target": "Belt_Conveyors ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group C", "target": "Drag_or_Chain_Link_Conveyors ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group C", "target": "Shafted_Screw_Conveyors ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group C", "target": "Shaftless_Spiral_Conveyors ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group C", "target": "Radiant Tube Heaters ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group C", "target": "Alternating current (a.c.) squirrel cage induction motor ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group C", "target": "Point smoke detectors ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group C", "target": "Weatherproof_equipment_enclosures ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "Multistage pump ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "Axially split casing pump", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "End-suction (back-pull-out type) pump ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "Double disc pump ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "Peristaltic pump", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "Progressing cavity pump ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "Ram pump ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "Rotary lobe pump ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "Single diaphragm pump ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "Vertically suspended bowl type pump ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Working Group B", "target": "Dry well sewage pump ", "value": 6, "type": "TemplateGovernance"},
+{"source": "Ancillaries", "target": "Door Catches", "value": 4, "type": ""},
+{"source": "Ancillaries", "target": "Door Restrictors", "value": 4, "type": ""},
+{"source": "Ancillaries", "target": "Finger Protection", "value": 4, "type": ""},
+{"source": "Ancillaries", "target": "Door Viewers", "value": 4, "type": ""},
+{"source": "Ancillaries", "target": "Mechanical Door Bolts", "value": 4, "type": ""},
+{"source": "Ancillaries", "target": "Sockets for Bolts", "value": 4, "type": ""},
+{"source": "Ancillaries", "target": "Door Stops", "value": 4, "type": ""},
+{"source": "Ancillaries", "target": "Letterplates", "value": 4, "type": ""},
+{"source": "Closing Devices", "target": "Co-ordinators", "value": 4, "type": ""},
+{"source": "Closing Devices", "target": "Control Closer", "value": 4, "type": ""},
+{"source": "Closing Devices", "target": "Emag Hold Open Closer", "value": 4, "type": ""},
+{"source": "Door Furniture", "target": "Fingerplates", "value": 4, "type": ""},
+{"source": "Door Furniture", "target": "Kickplates", "value": 4, "type": ""},
+{"source": "Door Furniture", "target": "Pull Handles", "value": 4, "type": ""},
+{"source": "Door Furniture", "target": "Turn Releases", "value": 4, "type": ""},
+{"source": "Door Furniture", "target": "Levers Knobs", "value": 4, "type": ""},
+{"source": "Door Systems", "target": "Pocket Doors", "value": 4, "type": ""},
+{"source": "Door Systems", "target": "Sliding Folding Doors", "value": 4, "type": ""},
+{"source": "Exit Devices", "target": "Emergency Exit Hardware", "value": 4, "type": ""},
+{"source": "Exit Devices", "target": "Panic Hardware", "value": 4, "type": ""},
+{"source": "Hanging Devices", "target": "Hinges", "value": 4, "type": ""},
+{"source": "Intumescent Acoustic", "target": "Acoustic Seals", "value": 4, "type": ""},
+{"source": "Intumescent Acoustic", "target": "Air Transfer Grills", "value": 4, "type": ""},
+{"source": "Intumescent Acoustic", "target": "Intumescent Protection", "value": 4, "type": ""},
+{"source": "Intumescent Acoustic", "target": "Internal Fire Smoke Seals", "value": 4, "type": ""},
+{"source": "Locking Devices", "target": "Electric Strikes", "value": 4, "type": ""},
+{"source": "Locking Devices", "target": "Electronic Mechanical Locks", "value": 4, "type": ""},
+{"source": "Locking Devices", "target": "Mechanical Digital Locks", "value": 4, "type": ""},
+{"source": "Locking Devices", "target": "Mechanical Cylinders", "value": 4, "type": ""},
+{"source": "Locking Devices", "target": "Mechanical Locks", "value": 4, "type": ""},
+{"source": "Locking Devices", "target": "Mechatronic Cylinders", "value": 4, "type": ""},
+{"source": "Signage", "target": "Bespoke Signage", "value": 4, "type": ""},
+{"source": "Signage", "target": "Signs Symbols", "value": 4, "type": ""},
+{"source": "Relevant Authority C", "target": "Door Catches", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Door Restrictors", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Finger Protection", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Door Viewers", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Mechanical Door Bolts", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Sockets for Bolts", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Door Stops", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Letterplates", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Co-ordinators", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Control Closer", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Emag Hold Open Closer", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Fingerplates", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Kickplates", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Pull Handles", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Turn Releases", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Levers Knobs", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Pocket Doors", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Sliding Folding Doors", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Emergency Exit Hardware", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Panic Hardware", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Hinges", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Acoustic Seals", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Air Transfer Grills", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Intumescent Protection", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Internal Fire Smoke Seals", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Electric Strikes", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Electronic Mechanical Locks", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Mechanical Digital Locks", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Mechanical Cylinders", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Mechanical Locks", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Mechatronic Cylinders", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Bespoke Signage", "value": 6, "type": "TemplateGovernance"},
+{"source": "Relevant Authority C", "target": "Signs Symbols", "value": 6, "type": "TemplateGovernance"},
+{"source": "35-11 23 23", "target": "Portable Energy Monitoring Equipment", "value": 4, "type": ""},
+{"source": "Pr_40_70_51", "target": "UV Steriliser", "value": 4, "type": ""},
+{"source": "Pr_60_45_30", "target": "Metal penstocks", "value": 4, "type": ""},
+{"source": "Pr_60_45_76", "target": "Decanter_Centrifuges", "value": 4, "type": ""},
+{"source": "Pr_60_45_80", "target": "Disc_Thickeners ", "value": 4, "type": ""},
+{"source": "Pr_60_45_80", "target": "Drum_Thickeners ", "value": 4, "type": ""},
+{"source": "Pr_60_45_80", "target": "Gravity_Belt_Thickeners", "value": 4, "type": ""},
+{"source": "Pr_60_45_80", "target": "Screw_Thickeners", "value": 4, "type": ""},
+{"source": "Pr_60_45_90", "target": "Submersible Mixers- Relevant Authority F Standards Library PDT Template ", "value": 4, "type": ""},
+{"source": "Pr_60_60_38", "target": "Plate Heat Exchanger", "value": 4, "type": ""},
+{"source": "Pr_60_65_31", "target": "Recirculating Fume Cupboards", "value": 4, "type": ""},
+{"source": "Pr_60_70_22", "target": "Distribution boards", "value": 4, "type": ""},
+{"source": "Pr_60_70_22", "target": "Electrical Panel LV", "value": 4, "type": ""},
+{"source": "Pr_60_70_48", "target": "Cut Out Assemblies", "value": 4, "type": ""},
+{"source": "Pr_60_70_48", "target": "Low Voltage HRC Fuses", "value": 4, "type": ""},
+{"source": "Pr_60_70_48", "target": "Powertrack Systems Underfloor Busbar", "value": 4, "type": ""},
+{"source": "Pr_60_70_48", "target": "Busbar Systems", "value": 4, "type": ""},
+{"source": "Pr_60_70_65", "target": "Combined Heat and Power", "value": 4, "type": ""},
+{"source": "Pr_65_52_01", "target": "Manhole", "value": 4, "type": ""},
+{"source": "Pr_65_53_24", "target": "Submersible pump unit", "value": 4, "type": ""},
+{"source": "Pr_65_53_86", "target": "Gas Booster", "value": 4, "type": ""},
+{"source": "Pr_65_53_86", "target": "Multistage pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Axially split casing pump", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "End-suction (back-pull-out type) pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Canister-mounted submersible  pump unit - Relevant Authority F PDT Template ", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Double disc pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Pipe-mounted submersible  pump unit - Relevant Authority F PDT Template", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Peristaltic pump", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Progressing cavity pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Ram pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Rotary lobe pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Single diaphragm pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Vertically suspended bowl type pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53_96", "target": "Dry well sewage pump ", "value": 4, "type": ""},
+{"source": "Pr_65_54_40", "target": "Isolation Valve", "value": 4, "type": ""},
+{"source": "Pr_65_54_94", "target": "Direct spring operated pressure relief valves", "value": 4, "type": ""},
+{"source": "Pr_65_54_94", "target": "Knife gate valves", "value": 4, "type": ""},
+{"source": "Pr_65_54_94", "target": "Line pressure driven automatic control valves", "value": 4, "type": ""},
+{"source": "Pr_65_54_94", "target": "Needle valves", "value": 4, "type": ""},
+{"source": "Pr_65_54_94", "target": "Pilot Operated Valve", "value": 4, "type": ""},
+{"source": "Pr_65_54_94", "target": "Solenoid Valve", "value": 4, "type": ""},
+{"source": "Pr_65_54_95", "target": "Ball valves- Relevant Authority F", "value": 4, "type": ""},
+{"source": "Pr_65_54_95", "target": "Cast iron check valve", "value": 4, "type": ""},
+{"source": "Pr_65_54_95", "target": "Thermostatic Mixing Valve", "value": 4, "type": ""},
+{"source": "Pr_65_54_95", "target": "Waterworks gate valves", "value": 4, "type": ""},
+{"source": "Pr_65_55_76", "target": "Deaerator And Dirt Separator", "value": 4, "type": ""},
+{"source": "Pr_65_57_96", "target": "Y Type Water Strainers", "value": 4, "type": ""},
+{"source": "Pr_65_70_11", "target": "Relevant Authority E Wire Cable Tray Basket Or Mesh", "value": 4, "type": ""},
+{"source": "Pr_65_70_11", "target": "Cable Ladder Systems", "value": 4, "type": ""},
+{"source": "Pr_65_70_11", "target": "Cable Tray System", "value": 4, "type": ""},
+{"source": "Pr_65_70_11", "target": "Distribution Skirting Dado Trunking", "value": 4, "type": ""},
+{"source": "Pr_65_70_11", "target": "Floor Trunking Systems", "value": 4, "type": ""},
+{"source": "Pr_65_72_27", "target": "Circuit Breakers For Overcurrent Protection", "value": 4, "type": ""},
+{"source": "Pr_65_72_27", "target": "RCCB Residual Current Circuit Breakers", "value": 4, "type": ""},
+{"source": "Pr_65_72_27", "target": "RCBO Residual Current Circuit Breakers", "value": 4, "type": ""},
+{"source": "Pr_65_72_97", "target": "Cavity Floor Grommet", "value": 4, "type": ""},
+{"source": "Pr_65_80_96", "target": "Belt_Conveyors ", "value": 4, "type": ""},
+{"source": "Pr_65_80_96", "target": "Drag_or_Chain_Link_Conveyors ", "value": 4, "type": ""},
+{"source": "Pr_65_80_96", "target": "Shafted_Screw_Conveyors ", "value": 4, "type": ""},
+{"source": "Pr_65_80_96", "target": "Shaftless_Spiral_Conveyors ", "value": 4, "type": ""},
+{"source": "Pr_70_55_97", "target": "Sprinkler Head", "value": 4, "type": ""},
+{"source": "Pr_70_60_36", "target": "Fan Convector Unit", "value": 4, "type": ""},
+{"source": "Pr_70_60_36", "target": "Radiant Panel", "value": 4, "type": ""},
+{"source": "Pr_70_60_36", "target": "Radiant Tube Heaters ", "value": 4, "type": ""},
+{"source": "Pr_70_60_36", "target": "Radiant Tube Heater", "value": 4, "type": ""},
+{"source": "Pr_70_60_36", "target": "Radiator", "value": 4, "type": ""},
+{"source": "Pr_70_60_36", "target": "Air Heater Gas Oil", "value": 4, "type": ""},
+{"source": "Pr_70_60_37", "target": "Air To Water Heat Pump", "value": 4, "type": ""},
+{"source": "Pr_70_60_37", "target": "Gas Absorption Heat Pump", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Bus section control panel", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Cable ways section panels", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Control circuit supplies panels", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Control panels", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Feeder control panels ", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Incoming supply control panels", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Instrumentation, automation and control panels ", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Power factor correction control panels", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Power quality filter section panels", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Telemetry control panels", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Uninterruptible power supply control panels", "value": 4, "type": ""},
+{"source": "Pr_75_50_18", "target": "Utility supply control panels ", "value": 4, "type": ""},
+{"source": "Pr_75_50_46", "target": "Electronic Level Controllers and Switches", "value": 4, "type": ""},
+{"source": "Pr_75_50_46", "target": "Float Switches ", "value": 4, "type": ""},
+{"source": "Pr_75_50_47", "target": "Ultrasonic Sensor", "value": 4, "type": ""},
+{"source": "Pr_75_50_76", "target": "Sensor CO2 Monitor", "value": 4, "type": ""},
+{"source": "Pr_75_50_76", "target": "Pressure Sensors", "value": 4, "type": ""},
+{"source": "Pr_75_51_26", "target": "Alternating current (a.c.) squirrel cage induction motor ", "value": 4, "type": ""},
+{"source": "Pr_75_51_52", "target": "Motor starters control panels", "value": 4, "type": ""},
+{"source": "Pr_75_75_30", "target": "Heat Detector", "value": 4, "type": ""},
+{"source": "Pr_75_75_30", "target": "Point smoke detectors ", "value": 4, "type": ""},
+{"source": "Pr_75_75_30", "target": "Smoke Detector", "value": 4, "type": ""},
+{"source": "Pr_80_77_28", "target": "Weatherproof_equipment_enclosures ", "value": 4, "type": ""},
+{"source": "35-11 23", "target": "Portable Energy Monitoring Equipment", "value": 4, "type": ""},
+{"source": "Pr_40_70", "target": "UV Steriliser", "value": 4, "type": ""},
+{"source": "Pr_60_45", "target": "Metal penstocks", "value": 4, "type": ""},
+{"source": "Pr_60_45", "target": "Decanter_Centrifuges", "value": 4, "type": ""},
+{"source": "Pr_60_45", "target": "Disc_Thickeners ", "value": 4, "type": ""},
+{"source": "Pr_60_45", "target": "Drum_Thickeners ", "value": 4, "type": ""},
+{"source": "Pr_60_45", "target": "Gravity_Belt_Thickeners", "value": 4, "type": ""},
+{"source": "Pr_60_45", "target": "Screw_Thickeners", "value": 4, "type": ""},
+{"source": "Pr_60_45", "target": "Submersible Mixers- Relevant Authority F Standards Library PDT Template ", "value": 4, "type": ""},
+{"source": "Pr_60_60", "target": "Plate Heat Exchanger", "value": 4, "type": ""},
+{"source": "Pr_60_65", "target": "Recirculating Fume Cupboards", "value": 4, "type": ""},
+{"source": "Pr_60_70", "target": "Distribution boards", "value": 4, "type": ""},
+{"source": "Pr_60_70", "target": "Electrical Panel LV", "value": 4, "type": ""},
+{"source": "Pr_60_70", "target": "Cut Out Assemblies", "value": 4, "type": ""},
+{"source": "Pr_60_70", "target": "Low Voltage HRC Fuses", "value": 4, "type": ""},
+{"source": "Pr_60_70", "target": "Powertrack Systems Underfloor Busbar", "value": 4, "type": ""},
+{"source": "Pr_60_70", "target": "Busbar Systems", "value": 4, "type": ""},
+{"source": "Pr_60_70", "target": "Combined Heat and Power", "value": 4, "type": ""},
+{"source": "Pr_65_52", "target": "Manhole", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Submersible pump unit", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Gas Booster", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Multistage pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Axially split casing pump", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "End-suction (back-pull-out type) pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Canister-mounted submersible  pump unit - Relevant Authority F PDT Template ", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Double disc pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Pipe-mounted submersible  pump unit - Relevant Authority F PDT Template", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Peristaltic pump", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Progressing cavity pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Ram pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Rotary lobe pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Single diaphragm pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Vertically suspended bowl type pump ", "value": 4, "type": ""},
+{"source": "Pr_65_53", "target": "Dry well sewage pump ", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Isolation Valve", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Direct spring operated pressure relief valves", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Knife gate valves", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Line pressure driven automatic control valves", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Needle valves", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Pilot Operated Valve", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Solenoid Valve", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Ball valves- Relevant Authority F", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Cast iron check valve", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Thermostatic Mixing Valve", "value": 4, "type": ""},
+{"source": "Pr_65_54", "target": "Waterworks gate valves", "value": 4, "type": ""},
+{"source": "Pr_65_55", "target": "Deaerator And Dirt Separator", "value": 4, "type": ""},
+{"source": "Pr_65_57", "target": "Y Type Water Strainers", "value": 4, "type": ""},
+{"source": "Pr_65_70", "target": "Relevant Authority E Wire Cable Tray Basket Or Mesh", "value": 4, "type": ""},
+{"source": "Pr_65_70", "target": "Cable Ladder Systems", "value": 4, "type": ""},
+{"source": "Pr_65_70", "target": "Cable Tray System", "value": 4, "type": ""},
+{"source": "Pr_65_70", "target": "Distribution Skirting Dado Trunking", "value": 4, "type": ""},
+{"source": "Pr_65_70", "target": "Floor Trunking Systems", "value": 4, "type": ""},
+{"source": "Pr_65_72", "target": "Circuit Breakers For Overcurrent Protection", "value": 4, "type": ""},
+{"source": "Pr_65_72", "target": "RCCB Residual Current Circuit Breakers", "value": 4, "type": ""},
+{"source": "Pr_65_72", "target": "RCBO Residual Current Circuit Breakers", "value": 4, "type": ""},
+{"source": "Pr_65_72", "target": "Cavity Floor Grommet", "value": 4, "type": ""},
+{"source": "Pr_65_80", "target": "Belt_Conveyors ", "value": 4, "type": ""},
+{"source": "Pr_65_80", "target": "Drag_or_Chain_Link_Conveyors ", "value": 4, "type": ""},
+{"source": "Pr_65_80", "target": "Shafted_Screw_Conveyors ", "value": 4, "type": ""},
+{"source": "Pr_65_80", "target": "Shaftless_Spiral_Conveyors ", "value": 4, "type": ""},
+{"source": "Pr_70_55", "target": "Sprinkler Head", "value": 4, "type": ""},
+{"source": "Pr_70_60", "target": "Fan Convector Unit", "value": 4, "type": ""},
+{"source": "Pr_70_60", "target": "Radiant Panel", "value": 4, "type": ""},
+{"source": "Pr_70_60", "target": "Radiant Tube Heaters ", "value": 4, "type": ""},
+{"source": "Pr_70_60", "target": "Radiant Tube Heater", "value": 4, "type": ""},
+{"source": "Pr_70_60", "target": "Radiator", "value": 4, "type": ""},
+{"source": "Pr_70_60", "target": "Air Heater Gas Oil", "value": 4, "type": ""},
+{"source": "Pr_70_60", "target": "Air To Water Heat Pump", "value": 4, "type": ""},
+{"source": "Pr_70_60", "target": "Gas Absorption Heat Pump", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Bus section control panel", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Cable ways section panels", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Control circuit supplies panels", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Control panels", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Feeder control panels ", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Incoming supply control panels", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Instrumentation, automation and control panels ", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Power factor correction control panels", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Power quality filter section panels", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Telemetry control panels", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Uninterruptible power supply control panels", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Utility supply control panels ", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Electronic Level Controllers and Switches", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Float Switches ", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Ultrasonic Sensor", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Sensor CO2 Monitor", "value": 4, "type": ""},
+{"source": "Pr_75_50", "target": "Pressure Sensors", "value": 4, "type": ""},
+{"source": "Pr_75_51", "target": "Alternating current (a.c.) squirrel cage induction motor ", "value": 4, "type": ""},
+{"source": "Pr_75_51", "target": "Motor starters control panels", "value": 4, "type": ""},
+{"source": "Pr_75_75", "target": "Heat Detector", "value": 4, "type": ""},
+{"source": "Pr_75_75", "target": "Point smoke detectors ", "value": 4, "type": ""},
+{"source": "Pr_75_75", "target": "Smoke Detector", "value": 4, "type": ""},
+{"source": "Pr_80_77", "target": "Weatherproof_equipment_enclosures ", "value": 4, "type": ""},
+{"source": "Pr", "target": "Weatherproof_equipment_enclosures ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Portable Energy Monitoring Equipment", "value": 7, "type": ""},
+{"source": "Pr", "target": "UV Steriliser", "value": 7, "type": ""},
+{"source": "Pr", "target": "Metal penstocks", "value": 7, "type": ""},
+{"source": "Pr", "target": "Decanter_Centrifuges", "value": 7, "type": ""},
+{"source": "Pr", "target": "Disc_Thickeners ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Drum_Thickeners ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Gravity_Belt_Thickeners", "value": 7, "type": ""},
+{"source": "Pr", "target": "Screw_Thickeners", "value": 7, "type": ""},
+{"source": "Pr", "target": "Submersible Mixers- Relevant Authority F Standards Library PDT Template ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Plate Heat Exchanger", "value": 7, "type": ""},
+{"source": "Pr", "target": "Recirculating Fume Cupboards", "value": 7, "type": ""},
+{"source": "Pr", "target": "Distribution boards", "value": 7, "type": ""},
+{"source": "Pr", "target": "Electrical Panel LV", "value": 7, "type": ""},
+{"source": "Pr", "target": "Cut Out Assemblies", "value": 7, "type": ""},
+{"source": "Pr", "target": "Low Voltage HRC Fuses", "value": 7, "type": ""},
+{"source": "Pr", "target": "Powertrack Systems Underfloor Busbar", "value": 7, "type": ""},
+{"source": "Pr", "target": "Busbar Systems", "value": 7, "type": ""},
+{"source": "Pr", "target": "Combined Heat and Power", "value": 7, "type": ""},
+{"source": "Pr", "target": "Manhole", "value": 7, "type": ""},
+{"source": "Pr", "target": "Submersible pump unit", "value": 7, "type": ""},
+{"source": "Pr", "target": "Gas Booster", "value": 7, "type": ""},
+{"source": "Pr", "target": "Multistage pump ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Axially split casing pump", "value": 7, "type": ""},
+{"source": "Pr", "target": "End-suction (back-pull-out type) pump ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Canister-mounted submersible  pump unit - Relevant Authority F PDT Template ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Double disc pump ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Pipe-mounted submersible  pump unit - Relevant Authority F PDT Template", "value": 7, "type": ""},
+{"source": "Pr", "target": "Peristaltic pump", "value": 7, "type": ""},
+{"source": "Pr", "target": "Progressing cavity pump ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Ram pump ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Rotary lobe pump ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Single diaphragm pump ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Vertically suspended bowl type pump ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Dry well sewage pump ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Isolation Valve", "value": 7, "type": ""},
+{"source": "Pr", "target": "Direct spring operated pressure relief valves", "value": 7, "type": ""},
+{"source": "Pr", "target": "Knife gate valves", "value": 7, "type": ""},
+{"source": "Pr", "target": "Line pressure driven automatic control valves", "value": 7, "type": ""},
+{"source": "Pr", "target": "Needle valves", "value": 7, "type": ""},
+{"source": "Pr", "target": "Pilot Operated Valve", "value": 7, "type": ""},
+{"source": "Pr", "target": "Solenoid Valve", "value": 7, "type": ""},
+{"source": "Pr", "target": "Ball valves- Relevant Authority F", "value": 7, "type": ""},
+{"source": "Pr", "target": "Cast iron check valve", "value": 7, "type": ""},
+{"source": "Pr", "target": "Thermostatic Mixing Valve", "value": 7, "type": ""},
+{"source": "Pr", "target": "Waterworks gate valves", "value": 7, "type": ""},
+{"source": "Pr", "target": "Deaerator And Dirt Separator", "value": 7, "type": ""},
+{"source": "Pr", "target": "Y Type Water Strainers", "value": 7, "type": ""},
+{"source": "Pr", "target": "Relevant Authority E Wire Cable Tray Basket Or Mesh", "value": 7, "type": ""},
+{"source": "Pr", "target": "Cable Ladder Systems", "value": 7, "type": ""},
+{"source": "Pr", "target": "Cable Tray System", "value": 7, "type": ""},
+{"source": "Pr", "target": "Distribution Skirting Dado Trunking", "value": 7, "type": ""},
+{"source": "Pr", "target": "Floor Trunking Systems", "value": 7, "type": ""},
+{"source": "Pr", "target": "Circuit Breakers For Overcurrent Protection", "value": 7, "type": ""},
+{"source": "Pr", "target": "RCCB Residual Current Circuit Breakers", "value": 7, "type": ""},
+{"source": "Pr", "target": "RCBO Residual Current Circuit Breakers", "value": 7, "type": ""},
+{"source": "Pr", "target": "Cavity Floor Grommet", "value": 7, "type": ""},
+{"source": "Pr", "target": "Belt_Conveyors ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Drag_or_Chain_Link_Conveyors ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Shafted_Screw_Conveyors ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Shaftless_Spiral_Conveyors ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Sprinkler Head", "value": 7, "type": ""},
+{"source": "Pr", "target": "Fan Convector Unit", "value": 7, "type": ""},
+{"source": "Pr", "target": "Radiant Panel", "value": 7, "type": ""},
+{"source": "Pr", "target": "Radiant Tube Heaters ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Radiant Tube Heater", "value": 7, "type": ""},
+{"source": "Pr", "target": "Radiator", "value": 7, "type": ""},
+{"source": "Pr", "target": "Air Heater Gas Oil", "value": 7, "type": ""},
+{"source": "Pr", "target": "Air To Water Heat Pump", "value": 7, "type": ""},
+{"source": "Pr", "target": "Gas Absorption Heat Pump", "value": 7, "type": ""},
+{"source": "Pr", "target": "Bus section control panel", "value": 7, "type": ""},
+{"source": "Pr", "target": "Cable ways section panels", "value": 7, "type": ""},
+{"source": "Pr", "target": "Control circuit supplies panels", "value": 7, "type": ""},
+{"source": "Pr", "target": "Control panels", "value": 7, "type": ""},
+{"source": "Pr", "target": "Feeder control panels ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Incoming supply control panels", "value": 7, "type": ""},
+{"source": "Pr", "target": "Instrumentation, automation and control panels ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Power factor correction control panels", "value": 7, "type": ""},
+{"source": "Pr", "target": "Power quality filter section panels", "value": 7, "type": ""},
+{"source": "Pr", "target": "Telemetry control panels", "value": 7, "type": ""},
+{"source": "Pr", "target": "Uninterruptible power supply control panels", "value": 7, "type": ""},
+{"source": "Pr", "target": "Utility supply control panels ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Electronic Level Controllers and Switches", "value": 7, "type": ""},
+{"source": "Pr", "target": "Float Switches ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Ultrasonic Sensor", "value": 7, "type": ""},
+{"source": "Pr", "target": "Sensor CO2 Monitor", "value": 7, "type": ""},
+{"source": "Pr", "target": "Pressure Sensors", "value": 7, "type": ""},
+{"source": "Pr", "target": "Alternating current (a.c.) squirrel cage induction motor ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Motor starters control panels", "value": 7, "type": ""},
+{"source": "Pr", "target": "Heat Detector", "value": 7, "type": ""},
+{"source": "Pr", "target": "Point smoke detectors ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Smoke Detector", "value": 7, "type": ""},
+{"source": "Pr", "target": "Weatherproof_equipment_enclosures ", "value": 7, "type": ""},
+{"source": "Pr", "target": "Pr_40_70_51_84", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_45_30_52", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_45_76_22", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_45_80_21", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_45_80_24", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_45_80_34", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_45_80_75", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_45_90_85", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_50_96", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_60_08", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_60_08", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_60_10", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_60_38_62", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_60_96", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_60_96", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_60_96", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_65_31", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_65_31_71", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_65_37", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_65_37", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_70_22", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_70_22_22", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_70_22_22", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_70_48_27", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_70_48_46", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_70_48_66", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_70_48_66", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_60_70_65_60", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_52_01_01", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_24_86", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_86_33", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_86_55", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_05", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_06", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_11", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_23", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_62", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_63", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_66", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_70", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_73", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_78", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_94", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_53_96_95", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_40_44", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_94_23", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_94_45", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_94_47", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_94_55", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_94_62", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_94_87", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_95_06", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_95_11", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_95_88", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_54_95_96", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_55_76_15", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_57_96_99", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_70_11_12", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_70_11_14", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_70_11_17", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_70_11_18", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_70_11_31", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_72_27_52", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_72_27_72", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_72_27_73", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Relevant Authority A", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Relevant Authority B", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Relevant Authority C", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Relevant Authority D", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Relevant Authority E", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Relevant Authority F", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Working Group A", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Working Group B", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Working Group C", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_72_97_52", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_80_96_07", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_80_96_24", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_80_96_79", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_65_80_96_80", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_55_97_84", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_60_36_30", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_60_36_71", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_60_36_72", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_60_36_72", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_60_36_73", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_60_36_93", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_60_37_04", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_60_37_34", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_65_04", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_70_70_48", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_10", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_11", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_16", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_17", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_28", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_40", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_41", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_67", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_69", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_90", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_92", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_18_93", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_46_27", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_46_30", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_47_92", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_76_02", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_50_76_68", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_51_26_03", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_51_52_22", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_75_30_64", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_75_30_65", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_75_75_30_65", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr", "target": "Pr_80_77_28_98", "value": 8, "type": "EpicTaskLink"},
+{"source": "Pr_30_36_08_23", "target": "Door Catches", "value": 3, "type": ""},
+{"source": "Pr_30_36_59_24", "target": "Door Restrictors", "value": 3, "type": ""},
+{"source": "Pr_30_59_57", "target": "Finger Protection", "value": 4, "type": ""},
+{"source": "Pr_30_36_33_76", "target": "Door Viewers", "value": 3, "type": ""},
+{"source": "Pr_30_36_08_22", "target": "Mechanical Door Bolts", "value": 3, "type": ""},
+{"source": "Pr_30_36_08", "target": "Sockets for Bolts", "value": 4, "type": ""},
+{"source": "Pr_30_36_33_24", "target": "Door Stops", "value": 3, "type": ""},
+{"source": "Pr_40_30_50_49", "target": "Letterplates", "value": 3, "type": ""},
+{"source": "Pr_30_36_59", "target": "Co-ordinators", "value": 4, "type": ""},
+{"source": "Pr_30_36_59_15", "target": "Control Closer", "value": 3, "type": ""},
+{"source": "Pr_75_30_23_26", "target": "Emag Hold Open Closer", "value": 3, "type": ""},
+{"source": "Pr_30_36_33_29", "target": "Fingerplates", "value": 3, "type": ""},
+{"source": "Pr_30_36_33_45", "target": "Kickplates", "value": 3, "type": ""},
+{"source": "Pr_30_36_59_64", "target": "Pull Handles", "value": 3, "type": ""},
+{"source": "Pr_75_30_30_28", "target": "Turn Releases", "value": 3, "type": ""},
+{"source": "Pr_30_36_59_45", "target": "Levers Knobs", "value": 3, "type": ""},
+{"source": "Pr_30_59_24_80", "target": "Pocket Doors", "value": 3, "type": ""},
+{"source": "Pr_30_59_24_81", "target": "Sliding Folding Doors", "value": 3, "type": ""},
+{"source": "Pr_30_36_08_28", "target": "Emergency Exit Hardware", "value": 3, "type": ""},
+{"source": "Pr_30_36_08_63", "target": "Panic Hardware", "value": 3, "type": ""},
+{"source": "Pr_30_36_36", "target": "Hinges", "value": 4, "type": ""},
+{"source": "Pr_35_90_33_23", "target": "Acoustic Seals", "value": 3, "type": ""},
+{"source": "Pr_30_59_94_06", "target": "Air Transfer Grills", "value": 3, "type": ""},
+{"source": "Pr_30_31_76_40", "target": "Intumescent Protection", "value": 3, "type": ""},
+{"source": "Pr_65_65_24_42", "target": "Internal Fire Smoke Seals", "value": 3, "type": ""},
+{"source": "Pr_75_30_27_26", "target": "Electric Strikes", "value": 3, "type": ""},
+{"source": "Pr_75_30_27_27", "target": "Electronic Mechanical Locks", "value": 3, "type": ""},
+{"source": "Pr_40_50_13_51", "target": "Mechanical Digital Locks", "value": 3, "type": ""},
+{"source": "Pr_40_50_13_51", "target": "Mechanical Cylinders", "value": 3, "type": ""},
+{"source": "Pr_40_50_13_51", "target": "Mechanical Locks", "value": 3, "type": ""},
+{"source": "Pr_40_50_13_51", "target": "Mechatronic Cylinders", "value": 3, "type": ""},
+{"source": "Pr_40_10_57", "target": "Bespoke Signage", "value": 4, "type": ""},
+{"source": "Pr_40_10_77_32", "target": "Signs Symbols", "value": 3, "type": ""},
+{"source": "Pr_30_36", "target": "Door Catches", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Door Restrictors", "value": 4, "type": ""},
+{"source": "Pr_30_59", "target": "Finger Protection", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Door Viewers", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Mechanical Door Bolts", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Sockets for Bolts", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Door Stops", "value": 4, "type": ""},
+{"source": "Pr_40_30", "target": "Letterplates", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Co-ordinators", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Control Closer", "value": 4, "type": ""},
+{"source": "Pr_75_30", "target": "Emag Hold Open Closer", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Fingerplates", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Kickplates", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Pull Handles", "value": 4, "type": ""},
+{"source": "Pr_75_30", "target": "Turn Releases", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Levers Knobs", "value": 4, "type": ""},
+{"source": "Pr_30_59", "target": "Pocket Doors", "value": 4, "type": ""},
+{"source": "Pr_30_59", "target": "Sliding Folding Doors", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Emergency Exit Hardware", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Panic Hardware", "value": 4, "type": ""},
+{"source": "Pr_30_36", "target": "Hinges", "value": 4, "type": ""},
+{"source": "Pr_35_90", "target": "Acoustic Seals", "value": 4, "type": ""},
+{"source": "Pr_30_59", "target": "Air Transfer Grills", "value": 4, "type": ""},
+{"source": "Pr_30_31", "target": "Intumescent Protection", "value": 4, "type": ""},
+{"source": "Pr_65_65", "target": "Internal Fire Smoke Seals", "value": 4, "type": ""},
+{"source": "Pr_75_30", "target": "Electric Strikes", "value": 4, "type": ""},
+{"source": "Pr_75_30", "target": "Electronic Mechanical Locks", "value": 4, "type": ""},
+{"source": "Pr_40_50", "target": "Mechanical Digital Locks", "value": 4, "type": ""},
+{"source": "Pr_40_50", "target": "Mechanical Cylinders", "value": 4, "type": ""},
+{"source": "Pr_40_50", "target": "Mechanical Locks", "value": 4, "type": ""},
+{"source": "Pr_40_50", "target": "Mechatronic Cylinders", "value": 4, "type": ""},
+{"source": "Pr_40_10", "target": "Bespoke Signage", "value": 4, "type": ""},
+{"source": "Pr_40_10", "target": "Signs Symbols", "value": 4, "type": ""},
+{"source": "Pr_30_36_08", "target": "Door Catches", "value": 4, "type": ""},
+{"source": "Pr_30_36_59", "target": "Door Restrictors", "value": 4, "type": ""},
+{"source": "Pr_30_59_57", "target": "Finger Protection", "value": 4, "type": ""},
+{"source": "Pr_30_36_33", "target": "Door Viewers", "value": 4, "type": ""},
+{"source": "Pr_30_36_08", "target": "Mechanical Door Bolts", "value": 4, "type": ""},
+{"source": "Pr_30_36_08", "target": "Sockets for Bolts", "value": 4, "type": ""},
+{"source": "Pr_30_36_33", "target": "Door Stops", "value": 4, "type": ""},
+{"source": "Pr_40_30_50", "target": "Letterplates", "value": 4, "type": ""},
+{"source": "Pr_30_36_59", "target": "Co-ordinators", "value": 4, "type": ""},
+{"source": "Pr_30_36_59", "target": "Control Closer", "value": 4, "type": ""},
+{"source": "Pr_75_30_23", "target": "Emag Hold Open Closer", "value": 4, "type": ""},
+{"source": "Pr_30_36_33", "target": "Fingerplates", "value": 4, "type": ""},
+{"source": "Pr_30_36_33", "target": "Kickplates", "value": 4, "type": ""},
+{"source": "Pr_30_36_59", "target": "Pull Handles", "value": 4, "type": ""},
+{"source": "Pr_75_30_30", "target": "Turn Releases", "value": 4, "type": ""},
+{"source": "Pr_30_36_59", "target": "Levers Knobs", "value": 4, "type": ""},
+{"source": "Pr_30_59_24", "target": "Pocket Doors", "value": 4, "type": ""},
+{"source": "Pr_30_59_24", "target": "Sliding Folding Doors", "value": 4, "type": ""},
+{"source": "Pr_30_36_08", "target": "Emergency Exit Hardware", "value": 4, "type": ""},
+{"source": "Pr_30_36_08", "target": "Panic Hardware", "value": 4, "type": ""},
+{"source": "Pr_30_36_36", "target": "Hinges", "value": 4, "type": ""},
+{"source": "Pr_35_90_33", "target": "Acoustic Seals", "value": 4, "type": ""},
+{"source": "Pr_30_59_94", "target": "Air Transfer Grills", "value": 4, "type": ""},
+{"source": "Pr_30_31_76", "target": "Intumescent Protection", "value": 4, "type": ""},
+{"source": "Pr_65_65_24", "target": "Internal Fire Smoke Seals", "value": 4, "type": ""},
+{"source": "Pr_75_30_27", "target": "Electric Strikes", "value": 4, "type": ""},
+{"source": "Pr_75_30_27", "target": "Electronic Mechanical Locks", "value": 4, "type": ""},
+{"source": "Pr_40_50_13", "target": "Mechanical Digital Locks", "value": 4, "type": ""},
+{"source": "Pr_40_50_13", "target": "Mechanical Cylinders", "value": 4, "type": ""},
+{"source": "Pr_40_50_13", "target": "Mechanical Locks", "value": 4, "type": ""},
+{"source": "Pr_40_50_13", "target": "Mechatronic Cylinders", "value": 4, "type": ""},
+{"source": "Pr_40_10_57", "target": "Bespoke Signage", "value": 4, "type": ""},
+{"source": "Pr_40_10_77", "target": "Signs Symbols", "value": 4, "type": ""},
+{"source": "Pr", "target": "Door Catches", "value": 7, "type": ""},
+{"source": "Pr", "target": "Door Restrictors", "value": 7, "type": ""},
+{"source": "Pr", "target": "Finger Protection", "value": 7, "type": ""},
+{"source": "Pr", "target": "Door Viewers", "value": 7, "type": ""},
+{"source": "Pr", "target": "Mechanical Door Bolts", "value": 7, "type": ""},
+{"source": "Pr", "target": "Sockets for Bolts", "value": 7, "type": ""},
+{"source": "Pr", "target": "Door Stops", "value": 7, "type": ""},
+{"source": "Pr", "target": "Letterplates", "value": 7, "type": ""},
+{"source": "Pr", "target": "Co-ordinators", "value": 7, "type": ""},
+{"source": "Pr", "target": "Control Closer", "value": 7, "type": ""},
+{"source": "Pr", "target": "Emag Hold Open Closer", "value": 7, "type": ""},
+{"source": "Pr", "target": "Fingerplates", "value": 7, "type": ""},
+{"source": "Pr", "target": "Kickplates", "value": 7, "type": ""},
+{"source": "Pr", "target": "Pull Handles", "value": 7, "type": ""},
+{"source": "Pr", "target": "Turn Releases", "value": 7, "type": ""},
+{"source": "Pr", "target": "Levers Knobs", "value": 7, "type": ""},
+{"source": "Pr", "target": "Pocket Doors", "value": 7, "type": ""},
+{"source": "Pr", "target": "Sliding Folding Doors", "value": 7, "type": ""},
+{"source": "Pr", "target": "Emergency Exit Hardware", "value": 7, "type": ""},
+{"source": "Pr", "target": "Panic Hardware", "value": 7, "type": ""},
+{"source": "Pr", "target": "Hinges", "value": 7, "type": ""},
+{"source": "Pr", "target": "Acoustic Seals", "value": 7, "type": ""},
+{"source": "Pr", "target": "Air Transfer Grills", "value": 7, "type": ""},
+{"source": "Pr", "target": "Intumescent Protection", "value": 7, "type": ""},
+{"source": "Pr", "target": "Internal Fire Smoke Seals", "value": 7, "type": ""},
+{"source": "Pr", "target": "Electric Strikes", "value": 7, "type": ""},
+{"source": "Pr", "target": "Electronic Mechanical Locks", "value": 7, "type": ""},
+{"source": "Pr", "target": "Mechanical Digital Locks", "value": 7, "type": ""},
+{"source": "Pr", "target": "Mechanical Cylinders", "value": 7, "type": ""},
+{"source": "Pr", "target": "Mechanical Locks", "value": 7, "type": ""},
+{"source": "Pr", "target": "Mechatronic Cylinders", "value": 7, "type": ""},
+{"source": "Pr", "target": "Bespoke Signage", "value": 7, "type": ""},
+{"source": "Pr", "target": "Signs Symbols", "value": 7, "type": ""}
+  ]
+};</script>
+<script id="datasourceUserInput">var graphUserInput = {
+  "nodes": [
+{"id": "inputTemplate","label": "", "group": 9, "status":"PotentialContribution","type": ""},
+  ],
+  "links": [
+{"source": "inputTemplate", "target": "Pr", "value": 2, "type": "seekingRA", "label": ""},
+]
+};</script>
+<script>
+ var   width = 500;
+ var   height = 500;
+
+var svg = d3.select("#r2")
+    .attr("width", width)
+    .attr("height", height)
+	.on("mousemove", mousemove)
+    .on("mousedown", mousedownCanvas)
+	.call(d3.drag()
+        .container(function() { return this; })
+        .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
+        .on("start", dragstarteddraw));
+
+
+/* joins data example https://observablehq.com/@bmpms/d3-js-join 
+function update_group(data){
+       //join
+       var my_group = svg.selectAll('.graph')
+                         .data(data, d => d.id)
+                         .join(function(group){
+                            var enter = group.append("g").attr("class","chart_group");
+                            enter.append("rect").attr("class","group_rect");
+                            enter.append("text").attr("class","group_text");
+                            enter.append("image").attr("class","group_image");
+                            return enter;
+                         });
+    return my_group;
+}*/
+
+
+/*----------- a) the simulation.
+This is basic functionality.
+center — pulls all nodes to the center
+charge — nodes repel from each other which prevents overlap
+link — specifies that id is the link variable*/
+
+var simulation = d3.forceSimulation()
+//https://bl.ocks.org/steveharoz/8c3e2524079a8c440df60c1ab72b5d03 is a good place to try out settings
+    .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(20))
+    .force("charge", d3.forceManyBody(-109).distanceMax(5000).distanceMin(50))
+    .force("center", d3.forceCenter(width / 2, height / 2))
+	.force("x",d3.forceX(width/2).strength(0.09))
+	.force("y",d3.forceY(height/2).strength(0.09))
+	.force("collide",d3.forceCollide().radius(function(d) { return 10}).strength(0.1).iterations(20));
+	//simulation.stop()
+
+//---------- b) define links group and set link properties (position comes later):
+var link = svg.append("g")
+    .attr("class", "links")
+    .selectAll("line")
+    .data(graph.links)
+    .enter().append("line")
+	.attr('class', function(d) { return typeLineClass(d); });
+	
+//----------- c) define nodes group and set properties.
+var node = svg.append("g")
+    .attr("class", "nodes")
+	 
+    .selectAll("g")
+    .data(graph.nodes)
+    .enter().append("g")
+	.attr("transform","translate(1170.9186048864808,478.12258967273794)")
+	.attr("id",function(d) { return ""+ d.id; })
+    
+var hexagons = node.append("a")
+    .attr("xlink:href",function(d) { return ""+ d.id; });
+		  
+var hrefs = hexagons.append("polygon")
+	.attr('class',  function(d) { return typeClass(d); })
+	.attr('stroke',  function(d) { return typeStatus(d); })
+	.attr('points', function(d) { return typeSize(d); })
+	.call(d3.drag()
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended))
+;
+var labels = node.append("text")
+      .text(function(d) {
+        return d.id;
+      })
+	  .attr('class', function(d) { return typeClass(d)+"Text"; })
+	  
+    node.append("title")
+      .text(function(d) {  return d.id; });
+
+// -------- d) append the data to the simulation
+    simulation
+      .nodes(graph.nodes);
+
+
+    simulation.force("link")
+      .links(graph.links);
+//---------- e) define the tick functionality and restart:
+    simulation
+	      .on("tick", ticked);
+  function ticked() {
+    link
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node
+        .attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+		  
+        })
+  }
+
+// --------- interactions
+
+var cursor = svg.append("circle")
+    .attr("r", 30)
+    .attr("transform", "translate(1000,400)")
+    .attr("class", "cursor");
+
+
+var inputTemplate = svg.append("g")
+    .attr("id", "inputTEMPLATE")
+	.data(graphUserInput.nodes)
+	
+
+	inputTemplate.append("circle")
+	.attr("id","UserInputShape")
+	.attr("r", 0)
+    .attr("transform", "translate(0,0)")
+    .attr("class", "inputTEMPLATE")
+
+	inputTemplate.append("text")
+	.attr("id","UserInput")
+	.attr("class","TemplateText")
+restart();
+
+
+/* --- https://bl.ocks.org/mbostock/f705fc55e6f26df29354 */
+var line = d3.line()
+    .curve(d3.curveBasis);
+
+
+
+
+
+function dragstarteddraw() {
+  var d = d3.event.subject,
+      active = svg.append("path").datum(d),
+      x0 = d3.event.x,
+      y0 = d3.event.y;
+
+  d3.event.on("drag", function() {
+    var x1 = d3.event.x,
+        y1 = d3.event.y,
+        dx = x1 - x0,
+        dy = y1 - y0;
+
+    if (dx * dx + dy * dy > 100) d.push([x0 = x1, y0 = y1]);
+    else d[d.length - 1] = [x1, y1];
+    active.attr("d", line);
+  });
+}
+
+
+function merge(allData) {
+    console.log(d3.merge([graph,graphUserInput]));
+}
+
+
+function mousemove() {
+  cursor.attr("transform", "translate(" + d3.mouse(this) + ")");
+}
+function mousedownCanvas() {
+  var point = d3.mouse(this),
+      newnode = {x: point[0], y: point[1]},
+      n = simulation.nodes.push(newnode);
+
+  // add links to any nearby nodes
+  /*nodes.forEach(function(target) {
+    var x = target.x - node.x,
+        y = target.y - node.y;
+    if (Math.sqrt(x * x + y * y) < 30) {
+      links.push({source: node, target: target});
+    }
+  });*/
+  restart();
+}
+function mousedownNode(d, i) {
+  simulation.nodes.splice(i, 1);
+  links = links.filter(function(l) {
+    return l.source !== d && l.target !== d;
+  });
+  d3.event.stopPropagation();
+
+  restart();
+}
+function restart() {
+  /*node = node.data(nodes);
+
+  node.enter().insert("g", ".cursor")
+      .attr("class", "template")
+      .attr("r", 50)
+      .on("mousedown", mousedownNode);
+
+  node.exit()
+      .remove();
+
+  link = link.data(links);
+
+  link.enter().insert("line", ".node")
+      .attr("class", "link");
+  link.exit()
+      .remove();
+
+  force.start();*/
+}
+//https://plnkr.co/edit/iadT0ikcpKELU0eaE9f6?p=info&preview
+
+
+/*-----------------------------------------*/
+/*----------------------------------------*/
+function typeSize(d){
+	switch(d.type) {
+	case 1:
+		return "-6.00,10.40 -12.00,0 -6.00,-10.40 6.00,-10.40 12.00,0 6.00,10.40";
+		break;
+	case 3:
+		return "-3.00,5.20 -6.00,0 -3.00,-5.20 3.00,-5.20 6.00,0 3.00,5.20";
+		break;
+	case 5:
+		return "-4.50,7.79 -9.00,0 -4.50,-7.79 4.50,-7.79 9.00,0 4.50,7.79";
+		break;
+	case "RA":
+		return "-6.00,10.40 -12.00,0 -6.00,-10.40 6.00,-10.40 12.00,0 6.00,10.40";
+		break;
+	case "Template":
+		return "-3.00,5.20 -6.00,0 -3.00,-5.20 3.00,-5.20 6.00,0 3.00,5.20";
+		break;
+	case "WG":
+		return "-4.50,7.79 -9.00,0 -4.50,-7.79 4.50,-7.79 9.00,0 4.50,7.79";
+		break;
+	case "Epic":
+		return "-12.00,20.80 -24.00,0 -12.00,-20.80 12.00,-20.80 24.00,0 12.00,20.80";
+		break;
+	case "Board":
+		return "-24.00,41.60 -48.00,0 -24.00,-41.60 24.00,-41.60 48.00,0 24.00,41.60";
+		break;
+	case "Story":
+		return "-3.00,5.20 -6.00,0 -3.00,-5.20 3.00,-5.20 6.00,0 3.00,5.20";
+		break;
+	case "Task":
+		return "-3.00,5.20 -6.00,0 -3.00,-5.20 3.00,-5.20 6.00,0 3.00,5.20";
+		break;
+	 default:
+		return "-1.50,2.60 -3.00,0 -1.50,-2.60 1.50,-2.60 3.00,0 1.50,2.60";
+		break;
+	}
+}
+function typeStatus(d){
+	switch(d.status) {
+  case "Published":
+    return "#0f0";
+    break;
+  case "Draft":
+    return "#555";
+    break;
+  case "Active":
+    return "#0f0";
+    break;
+  case "Inactive":
+    return "#f00";
+    break;
+  case "Under Review":
+    return "#ff0";
+    break;
+  case "Archived":
+    return "#f00";
+    break;
+ case "To Do":
+    return "#EBECF0";
+    break;
+ case "In Progress":
+    return "#0F54C9";
+    break;
+ case "Done":
+    return "#3AB37F";
+    break;
+  default:
+    return "#fff";
+}
+}
+function typeClass(d){
+	switch(d.type) {
+  case 1:
+    return "RA";
+    break;
+  case 2:
+    return "Other";
+    break;
+  case 3:
+    return "Template";
+    break;
+  case 4:
+    return "Class";
+    break;
+  case 5:
+    return "WG";
+    break;
+  case 8:
+    return "TemplateType";
+    break;
+  case "RA":
+    return "RA";
+    break;
+  case "Other":
+    return "Other";
+    break;
+  case "Template":
+    return "Template";
+    break;
+  case "Class":
+    return "Class";
+    break;
+  case "WG":
+    return "WG";
+    break;
+  case "TemplateType":
+    return "TemplateType";
+    break;
+  case "Epic":
+    return "Epic";
+    break;
+  case "Board":
+    return "Board";
+    break;
+  case "Story":
+    return "Story";
+    break;
+  case "Task":
+    return "Task";
+    break;
+  default:
+    return "Other";
+}
+}
+function typeLineClass(d){
+	switch(d.type) {
+  case "relates to":
+    return "EpicRel";
+    break;
+  case "duplicates":
+    return "EpicRelDup";
+    break;
+  case "RAWG":
+    return "RAWG";
+    break;
+  case "TemplateGovernance":
+    return "TemplateGovernance";
+    break;
+  default:
+    return "Other";
+}
+}
+/*---------------------------Interaction functions --------------------------*/
+function dragstarted(d) {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+  d3.select(this).classed("fixed", true);
+}
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+function dragended(d) {
+  if (!d3.event.active) simulation.alphaTarget(0);
+ // d.fx = null;
+ // d.fy = null;
+}
+
+
+
+
+
+</script>
